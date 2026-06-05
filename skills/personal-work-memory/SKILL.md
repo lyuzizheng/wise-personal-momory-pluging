@@ -158,6 +158,7 @@ work-memory/
     sources.yaml
     privacy.yaml
     taxonomy.yaml
+    departments.yaml
     project_aliases.yaml
     extraction_policy.yaml
     publishing_policy.yaml
@@ -553,7 +554,52 @@ confidence_thresholds:
   leave_unclassified_below: 0.55
 ```
 
-### 6.5 config/project_aliases.yaml
+### 6.5 config/departments.yaml
+
+Use department categories to shape summaries and auto-categorise work for a Wise-style fintech environment. These are business context labels, not employee profiles.
+
+```yaml
+departments:
+  included:
+    - engineering
+    - product
+    - design
+    - compliance
+    - legal
+    - risk
+    - finance
+    - treasury
+    - data_analytics
+    - security
+    - privacy
+    - people
+    - marketing
+    - business_development
+    - banking_partnerships
+    - strategy
+  excluded:
+    - customer_support
+    - operations
+
+categorisation:
+  primary_source: slack_profile_department
+  fallback_sources:
+    - slack_profile_title
+    - slack_profile_team
+    - team_home_wiki
+    - project_aliases
+  confidence_threshold: 0.70
+  require_user_review_below: 0.70
+```
+
+Rules:
+
+- If Slack profile data has a department, use it as the first department candidate.
+- If the Slack department maps to customer support or operations, keep it out of this memory unless the user explicitly overrides the scope.
+- If department is ambiguous, ask the user instead of guessing.
+- Use department labels to choose summary language and audience views; do not store unnecessary personal attributes.
+
+### 6.6 config/project_aliases.yaml
 
 ```yaml
 projects:
@@ -674,6 +720,17 @@ Responsibilities:
 
 Run daily after the user’s local workday or the next morning.
 
+Always resolve dates explicitly in the user's timezone. If the user does not specify a date, prefer today's local date first. If they ask to "trace back", "catch up", "prepare data", or "update data", accept any specific date or date range, including yesterday, last week, last month, or non-sequential dates.
+
+Date handling rules:
+
+- **Today first:** for an ordinary daily run, generate or update today's record before suggesting yesterday or older backfill.
+- **Yesterday:** if the user asks for yesterday, resolve it to the exact local calendar date before writing.
+- **Backfill ranges:** process one date at a time and write each daily record independently.
+- **Non-sequential updates:** allow missing days. Do not force records for dates the user did not ask for.
+- **Re-runs:** treat an existing daily record as an update. Preserve evidence IDs where possible, add new manual/imported data, and record what changed.
+- **Rollups:** weekly, monthly, and quarterly rollups should use all available daily/project records in scope, even if some dates are missing.
+
 Before generating or updating the daily record, prompt the user for temporary daily data to add on top of recorded history:
 
 - work that happened outside available source connectors;
@@ -685,7 +742,7 @@ If the user provides temporary data, store or stage it under `personal-work-trac
 
 Input:
 
-- target date, default yesterday in user's timezone;
+- target date, default today in user's timezone;
 - user config;
 - source cursors;
 - active project definitions;
@@ -729,6 +786,8 @@ Algorithm:
 ## 9. Weekly Workflow
 
 Weekly records are generated from daily records and project timelines.
+
+Weekly rollups do not require all seven daily records to exist. Use the daily records and event files available for that ISO week, list missing dates under `Source Coverage and Gaps`, and keep confidence lower when coverage is incomplete.
 
 Weekly file path:
 
@@ -793,6 +852,8 @@ Rules:
 
 Monthly records are generated from weekly records and project records.
 
+Monthly rollups do not require every week or every day to be present. Use available weekly records, daily records, and project timelines for the requested month. Record missing date ranges explicitly.
+
 Monthly file path:
 
 ```text
@@ -817,6 +878,8 @@ Monthly sections:
 ## 11. Quarterly Workflow
 
 Quarterly records are generated from monthly records, project records, and declared quarterly goals.
+
+Quarterly rollups do not require continuous monthly coverage. Use available records in scope and mark gaps clearly.
 
 Quarterly file path:
 

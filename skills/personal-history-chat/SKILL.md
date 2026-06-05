@@ -40,6 +40,7 @@ Choose the mode that matches the user's question:
 
 - **Timeline:** What happened, in what order, with evidence.
 - **Project insight:** What moved forward, what stalled, and what changed.
+- **Department lens:** How work maps to Wise-style fintech departments such as Engineering, Product, Compliance, Legal, Risk, Finance, Treasury, Data, Security, Privacy, People, Marketing, Business Development, Banking Partnerships, Strategy, or Design.
 - **Follow-up extraction:** Open follow-ups, blockers, risks, and unresolved questions.
 - **Coverage check:** Which sources or days are missing.
 - **AI navigation:** Which files an agent should read next and why.
@@ -63,3 +64,5 @@ For most answers, use:
 4. Suggested next interaction with the work trace, if useful.
 
 Keep answers compact. The point is to make the history useful, not to mirror the whole archive back to the user.
+
+When a department view is requested, use department labels from `personal-work-trace/config/departments.yaml`, Slack-derived init context, project aliases, and source evidence. Customer Support and Operations are out of scope unless the user explicitly overrides that boundary.
