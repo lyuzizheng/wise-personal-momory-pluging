@@ -1,0 +1,19 @@
+{
+  "name": "wise-personal-momory-pluging",
+  "version": "0.1.0",
+  "description": "Personal work-memory plugin for evidence-backed daily, weekly, and project work traces.",
+  "author": {
+    "name": "Zizheng Lyu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "personal-memory",
+    "work-trace",
+    "skills",
+    "codex",
+    "claude"
+  ],
+  "skills": [
+    "./skills/"
+  ]
+}

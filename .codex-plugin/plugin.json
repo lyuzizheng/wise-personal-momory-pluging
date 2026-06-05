@@ -1,0 +1,34 @@
+{
+  "name": "wise-personal-momory-pluging",
+  "version": "0.1.0",
+  "description": "Personal work-memory plugin for evidence-backed daily, weekly, and project work traces.",
+  "author": {
+    "name": "Zizheng Lyu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "personal-memory",
+    "work-trace",
+    "skills",
+    "codex",
+    "claude"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Wise Personal Work Memory",
+    "shortDescription": "Evidence-backed personal work trace memory.",
+    "longDescription": "A personal agent plugin for maintaining local, evidence-backed work traces from whichever source skills, plugins, connectors, local files, and manual notes are available to the current agent.",
+    "developerName": "Zizheng Lyu",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "brandColor": "#2563EB",
+    "defaultPrompt": [
+      "Use $personal-work-memory to create today's work trace.",
+      "Use $personal-work-memory to summarize this week's project activity.",
+      "Use $personal-work-memory to classify unfiled work events."
+    ]
+  }
+}

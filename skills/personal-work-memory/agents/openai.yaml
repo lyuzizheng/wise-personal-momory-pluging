@@ -1,0 +1,8 @@
+interface:
+  display_name: "Personal Work Memory"
+  short_description: "Maintain evidence-backed work traces."
+  brand_color: "#2563EB"
+  default_prompt: "Use $personal-work-memory to create an evidence-backed work trace from available sources."
+
+policy:
+  allow_implicit_invocation: true
