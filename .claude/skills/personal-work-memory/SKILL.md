@@ -679,19 +679,20 @@ The system uses a coordinator agent and specialized sub-agents.
 Responsibilities:
 
 1. Determine exact target dates and affected weekly/monthly/quarterly periods.
-2. Load config, previous state, project definitions, existing daily records, existing rollups, and the skill snapshot.
+2. Load config, previous state, project definitions, existing daily/project/rollup records, and the skill snapshot.
 3. Build a run checklist from `0.1 Mandatory Run Contract`.
 4. Spawn source agents for sources that are both enabled and available.
 5. Spawn project association, rollup, and quality agents when the current runtime supports subagents.
 6. Validate normalized events.
 7. Dedupe events.
 8. Run project and project-role association.
-9. Generate or update daily records for every target date.
-10. Update project timelines and indexes for every touched project.
-11. Always evaluate rollups for every affected period and write/update the required rollup files.
-12. Run quality/privacy checks after daily, project, and rollup writes.
-13. Write run log with completed/skipped phases.
-14. Produce review summary for the user.
+9. When target-date records already exist, merge them with new evidence under the latest skill instructions before writing.
+10. Generate or update daily records for every target date.
+11. Update project timelines and indexes for every touched project.
+12. Always evaluate rollups for every affected period and write/update the required rollup files.
+13. Run quality/privacy checks after daily, project, and rollup writes.
+14. Write run log with completed/skipped phases.
+15. Produce review summary for the user.
 
 ### 7.2 Source Agents
 
@@ -804,7 +805,8 @@ Date handling rules:
 - **Yesterday:** if the user asks for yesterday, resolve it to the exact local calendar date before writing.
 - **Backfill ranges:** process one date at a time and write each daily record independently.
 - **Non-sequential updates:** allow missing days. Do not force records for dates the user did not ask for.
-- **Re-runs:** treat an existing daily record as an update. Preserve evidence IDs where possible, add new manual/imported data, and record what changed.
+- **Re-runs:** treat an existing daily record as an update, not a replacement. Preserve evidence IDs and source pointers where possible, add new manual/imported data, upgrade missing fields required by the latest skill instructions, and record what changed.
+- **Existing today:** if today's record already exists, load the existing daily markdown, summary JSON, event JSONL, touched project files, and affected rollups first. Merge old trace data with new evidence using the current skill rules; do not regenerate from only the newest source fetch.
 - **Rollups:** weekly, monthly, and quarterly rollups should use all available daily/project records in scope, even if some dates are missing.
 
 Before generating or updating the daily record, prompt the user for temporary daily data to add on top of recorded history:
@@ -843,8 +845,10 @@ Algorithm:
    - Every source or subagent must return events, source gaps, privacy redactions, and files/source objects read.
 4. **Normalize/privacy phase**
    - Normalize traces into event objects.
+   - Load existing target-date events and treat them as prior evidence.
    - Validate event schema.
-   - Dedupe using `dedupe_key` and source object ids.
+   - Dedupe using stable `event_id`, `dedupe_key`, and source object ids.
+   - If existing events lack fields now required by the latest skill, enrich them from available daily/project/import evidence instead of dropping them.
    - Redact or skip unsafe content.
 5. **Project association phase**
    - Use deterministic mapping first, semantic classification second.
@@ -852,10 +856,10 @@ Algorithm:
    - Select project only when confidence meets threshold.
    - Keep low-confidence project or role assignments unclassified or `unknown`.
 6. **Daily write phase**
-   - Write `events/YYYY/MM/YYYY-MM-DD.events.jsonl`.
-   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.md`.
-   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.summary.json`.
-   - Re-runs must preserve stable event ids where possible and log what changed.
+   - Write `events/YYYY/MM/YYYY-MM-DD.events.jsonl` as the merged current view for that date.
+   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.md` from merged old and new events.
+   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.summary.json` from merged old and new events.
+   - Re-runs must preserve stable event ids where possible, keep older evidence links, apply the latest output schema, and log what changed.
 7. **Project write phase**
    - For every touched project, append/update:
      - `timeline.jsonl`;
@@ -865,6 +869,7 @@ Algorithm:
      - `followups.md`;
      - `risks.md`.
    - Append role-reclassification events when the project role changed.
+   - When old project entries are sparse, preserve them and append enriched timeline/evidence/decision entries derived from the merged daily record rather than replacing history.
 8. **Mandatory rollup phase**
    - Refresh every affected weekly rollup after daily and project writes.
    - Refresh affected monthly rollups if any weekly input in that month changed, if the user requested a month/backfill, or if the month is complete.
@@ -1828,7 +1833,17 @@ Before updating local traces, compare the current skill hashes with `state/skill
 6. If project-role rules changed, scan existing project timelines and mark likely observer/side_helper projects for review before future rollups.
 7. Update `state/skill_snapshot.json` after the run.
 
-Do not rewrite old daily/project records only because the skill changed. Prefer appending migration notes or updating rollups unless the user explicitly asks to reprocess records.
+When the target date already has daily/event/project data, the run must follow the latest skill instructions while preserving old trace data:
+
+1. Load the existing target-date daily markdown, summary JSON, event JSONL, touched project timelines, project evidence/decision/follow-up/risk files, and affected rollups.
+2. Build a merged event set from old events plus newly collected/imported/manual evidence.
+3. Keep stable event ids and source pointers for unchanged old events.
+4. Add newly required fields to old events when the value can be inferred from existing evidence; otherwise set the field to `unknown`, `not_captured`, or an explicit coverage gap.
+5. Preserve old decisions, follow-ups, risks, and timeline entries unless a dedupe key proves they are duplicates.
+6. Recompute daily summaries, project records, and affected rollups from the merged event set so old work and new evidence appear together.
+7. Record the migration/merge decision and any unfilled new fields in `logs/skill-update-log.md` or the daily run log.
+
+Do not rewrite unrelated old daily/project records only because the skill changed. Prefer appending migration notes or updating rollups unless the user explicitly asks to reprocess records.
 
 ---
 
@@ -1923,7 +1938,8 @@ The MVP is acceptable when:
 7. Weekly rollup can be generated from daily records.
 8. Project timeline files update correctly.
 9. Re-running the same day is idempotent.
-10. The user can review what changed.
+10. If the current-day record already exists, the run merges old trace data with new evidence under the latest skill instructions instead of replacing it.
+11. The user can review what changed.
 
 ---
 
