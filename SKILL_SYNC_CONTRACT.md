@@ -23,17 +23,9 @@ These mirrors exist so Codex and Claude Code can discover the skills when a chat
 
 Do not edit mirror files directly. They are generated from `skills/`.
 
-## Sync Command
-
-Run this after editing canonical skills:
-
-```bash
-./scripts/sync-project-skills.sh
-```
-
 ## Pre-Commit Hook
 
-The tracked hook at `.githooks/pre-commit` runs the sync command and stages only the generated mirror directories:
+The tracked hook at `.githooks/pre-commit` refreshes mirrors from `skills/` and stages only the generated mirror directories:
 
 ```text
 .agents/skills/

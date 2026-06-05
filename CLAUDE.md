@@ -8,7 +8,7 @@ Use these shared skills:
 - `skills/personal-work-memory/SKILL.md` for work trace documentation, work-memory backfills, daily or weekly summaries, project timelines, source coverage reports, and follow-up extraction.
 - `skills/personal-history-chat/SKILL.md` for questions, insights, evidence lookup, and guidance on navigating the local work trace structure.
 
-Claude Code project-local copies live under `.claude/skills/`. Canonical skill edits belong in `skills/`; after editing, run `./scripts/sync-project-skills.sh` to refresh `.claude/skills/` and `.agents/skills/`.
+Claude Code project-local copies live under `.claude/skills/`. Canonical skill edits belong in `skills/`; the pre-commit hook refreshes `.claude/skills/` and `.agents/skills/`.
 
 When reading source evidence, use the skills, plugins, MCP servers, app connectors, local files, or manual notes available to the current Claude runtime. If a source is not available or not authenticated, record the gap instead of filling it from inference.
 

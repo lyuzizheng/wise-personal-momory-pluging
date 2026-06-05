@@ -32,9 +32,7 @@ When starting a new Claude Code or Codex chat inside this folder, the skills sho
 - Codex: `.agents/skills/`
 - Claude Code: `.claude/skills/`
 
-Canonical edits belong in `skills/`. After editing, run `./scripts/sync-project-skills.sh` to refresh both mirrors.
-
-The repo also has a tracked pre-commit hook that runs the same sync and stages only the generated mirror directories. Enable it once with:
+Canonical edits belong in `skills/`. The tracked pre-commit hook refreshes both mirrors and stages only the generated mirror directories. Enable it once with:
 
 ```bash
 git config core.hooksPath .githooks

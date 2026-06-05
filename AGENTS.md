@@ -11,7 +11,7 @@ This repository is a Claude/Codex-compatible personal agent plugin.
 - Claude Code project-local skill copies: `.claude/skills/`
 - Local work trace store: `personal-work-trace/`
 
-Canonical skill edits belong in `skills/`. After editing skills, run `./scripts/sync-project-skills.sh` so new chats started in this folder can discover the mirrored project-local skills.
+Canonical skill edits belong in `skills/`. The pre-commit hook refreshes `.agents/skills/` and `.claude/skills/` from `skills/` so new chats started in this folder can discover the mirrored project-local skills.
 
 ## Work Trace Rules
 

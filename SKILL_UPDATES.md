@@ -13,5 +13,4 @@
 - Added subagent guidance for large initialization/backfill contexts.
 - Added local trace skill snapshot policy via `personal-work-trace/state/skill_snapshot.json` and `personal-work-trace/logs/skill-update-log.md`.
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.
-- Added `scripts/sync-project-skills.sh` to keep project-local skill mirrors in sync with canonical `skills/`.
 - Added `SKILL_SYNC_CONTRACT.md` and `.githooks/pre-commit` so commits keep generated skill mirrors current.
