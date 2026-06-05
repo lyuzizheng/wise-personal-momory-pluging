@@ -62,6 +62,7 @@ git config core.hooksPath .githooks
 - Department categorisation should fit a fintech company: Engineering, Product, Design, Compliance, Legal, Risk, Finance, Treasury, Data and Analytics, Security, Privacy, People, Marketing, Business Development, Banking Partnerships, and Strategy.
 - Customer Support and Operations users are out of scope unless explicitly added.
 - During init, use Slack profile department as the first categorisation signal and ask when confidence is low.
+- During init, try to find the current Confluence team wiki/home space, team member intro pages, and personal onboarding docs.
 - For Confluence team spaces, ignore pages not updated in the last 24 months unless the user explicitly names them.
 
 ## Source Discovery

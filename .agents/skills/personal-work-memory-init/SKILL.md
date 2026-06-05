@@ -49,11 +49,12 @@ Use only capabilities available to the current agent:
 
 1. If Slack profile access is available, read the user's basic profile metadata, especially department, title, team, and timezone.
 2. Use Slack profile department as the first department categorisation signal.
-3. If Google Drive, Confluence, or local files are available, look for explicitly named planning docs such as quarterly planners, team home pages, project plans, or operating docs.
-4. For Confluence team spaces, ignore pages that were last updated more than 24 months before the init date unless the user explicitly names the page or asks to include stale history.
-5. If Figma, FigJam, design-system, or other MCP connectors are available, use them as lightweight project/design evidence when relevant.
-6. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
-7. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
+3. If Google Drive, Confluence, or local files are available, look for explicitly named planning docs such as quarterly planners, team home pages, team member intros, personal onboarding docs, project plans, or operating docs.
+4. For Confluence team spaces, try to find the team home/wiki space first, then inspect fresh team member intro pages and personal onboarding docs for role, team, project, and ritual context.
+5. For Confluence team spaces, ignore pages that were last updated more than 24 months before the init date unless the user explicitly names the page or asks to include stale history.
+6. If Figma, FigJam, design-system, or other MCP connectors are available, use them as lightweight project/design evidence when relevant.
+7. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
+8. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
 
 Do not request plugin installation unless the user specifically asks for live connector-backed initialization.
 
@@ -126,6 +127,8 @@ When Slack profile department is available:
 
 When using a Confluence team space during init:
 
+- Try to locate the current team home/wiki space before looking at scattered pages.
+- Prefer pages named like team home, team members, team intro, onboarding, personal onboarding, getting started, ways of working, rituals, roadmap, quarterly planning, or project index.
 - Use pages updated within the last 24 months relative to the init date.
 - Ignore pages last updated more than 24 months before the init date.
 - Store stale-page skips in `knowledge/source-map.md` as coverage notes, not as project evidence.
@@ -140,7 +143,7 @@ Prompt the user for:
 - Personal basics: preferred name, work email, timezone, Slack handle, GitHub username, Jira identity.
 - Department: confirm the Slack-derived department or choose the closest fintech department category.
 - Big plans: quarterly goals, important deliverables, current priorities, and things they want the memory to track.
-- Team context: team name, manager or lead if relevant, team home wiki URLs, operating docs, recurring rituals.
+- Team context: team name, manager or lead if relevant, team home wiki URLs, team member intro pages, personal onboarding docs, operating docs, recurring rituals.
 - Project context: active projects, Jira epics, GitHub repos, Confluence pages, Slack channels, Docs folders, recurring meetings.
 - Boundaries: sources to skip, private channels or DMs to exclude, content that must never be stored.
 
@@ -189,7 +192,7 @@ Keep private values minimal. Store identifiers and links, not secrets or credent
 4. Derive department from Slack profile if available and ask the user to confirm if ambiguous.
 5. Analyze Slack channel membership, bot posts, and `@` mentions for role/project signals.
 6. Ask the user for missing big plans, team home wiki URLs, quarterly planner files, and source boundaries.
-7. For Confluence team spaces, skip pages older than 24 months without updates unless explicitly named.
+7. For Confluence team spaces, find the team wiki/home space, then inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
 8. Create the seed structure and starter config.
 9. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
 10. Create project definitions only for projects with enough signal to classify future events.
