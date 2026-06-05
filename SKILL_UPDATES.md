@@ -14,6 +14,8 @@
 - Added DataGrip/local SQL query-work support for analysts and query-heavy roles, with subagent analysis and strict no-PII/no-credential handling.
 - Added init gates requiring main Slack channel, Confluence/Atlassian team wiki/home space, and quarterly plans before seed files are written.
 - Added smart Slack channel ranking for init so agents inspect the most important joined channels first.
+- Added project involvement role classification so projects distinguish owner/core contributor/reviewer/side helper/observer/unknown instead of treating every matched project as owned work.
+- Added trace update guidance for role reclassification when skill behavior changes.
 - Added subagent guidance for large initialization/backfill contexts.
 - Added local trace skill snapshot policy via `personal-work-trace/state/skill_snapshot.json` and `personal-work-trace/logs/skill-update-log.md`.
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.

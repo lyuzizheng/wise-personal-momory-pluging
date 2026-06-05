@@ -43,11 +43,13 @@ Choose the mode that matches the user's question:
 
 - **Timeline:** What happened, in what order, with evidence.
 - **Project insight:** What moved forward, what stalled, and what changed.
+- **Project role:** Whether the user appears to be owner, core contributor, reviewer, side helper, observer, or unknown for a project.
 - **Department lens:** How work maps to Wise-style fintech departments such as Engineering, Product, Compliance, Legal, Risk, Finance, Treasury, Data, Security, Privacy, People, Marketing, Business Development, Banking Partnerships, Strategy, or Design.
 - **Follow-up extraction:** Open follow-ups, blockers, risks, and unresolved questions.
 - **Coverage check:** Which sources or days are missing.
 - **AI navigation:** Which files an agent should read next and why.
 - **Memory hygiene:** Duplicate records, weak project mappings, stale follow-ups, or missing project definitions.
+- **Role hygiene:** Projects that appear over-included because the user was only an observer or side helper.
 
 ## Empty Or Sparse History
 

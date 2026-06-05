@@ -74,6 +74,8 @@ git config core.hooksPath .githooks
 - If Google/Jira/Confluence/Figma connectors are unavailable, use Slack signals where possible: bot posts, channel membership, daily channels, on-call channels, and `@` mentions.
 - For analysts and query-heavy roles, use DataGrip/local SQL files only through sanitized query-work analysis by subagent.
 - Never store query results, credentials, connection strings, raw sensitive SQL, customer identifiers, or PII.
+- Project matching includes the user's role: owner, core contributor, reviewer, side helper, observer, or unknown.
+- Side-helper and observer projects should not be mixed into owned/core achievement summaries.
 - Bot messages are evidence pointers, not final truth. Keep confidence lower and ask when ambiguous.
 - If available sources are too thin, ask the user to add connectors or provide manual seed data.
 - For large Slack/wiki/backfill context, use subagents when the current agent supports them.
@@ -83,4 +85,5 @@ git config core.hooksPath .githooks
 - Each local trace store should keep `personal-work-trace/state/skill_snapshot.json`.
 - Each local trace store should keep `personal-work-trace/logs/skill-update-log.md`.
 - When skills change, compare the current skill snapshot with the stored snapshot before updating old traces.
+- If project-role rules changed, mark likely observer/side-helper projects for review before future rollups.
 - Prefer migration notes or rollup updates over rewriting historical daily records.

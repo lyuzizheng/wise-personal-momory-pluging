@@ -250,7 +250,7 @@ Keep private values minimal. Store identifiers and links, not secrets or credent
 12. For Confluence team spaces, inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
 13. Create the seed structure and starter config.
 14. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
-15. Create project definitions only for projects with enough signal to classify future events.
+15. Create project definitions only for projects with enough signal to classify future events and the user's likely role in them.
 16. For week, month, or custom date ranges, process each date independently and roll up from available records.
 17. Write `knowledge/source-map.md` with source availability and gaps, important channel selection reasons, stale wiki pages skipped, and connectors that would improve confidence.
 18. Tell the user what was initialized, what is still missing, and which skill to use next.

@@ -105,6 +105,7 @@ Every work event must have:
 - short factual summary;
 - evidence links or source pointers;
 - project candidates;
+- project involvement role candidates;
 - confidence score;
 - privacy classification;
 - extraction metadata.
@@ -371,10 +372,13 @@ Each line is one normalized event.
     {
       "project_id": "PROJECT-SETTLEMENT-RECON",
       "reason": "Repository ownership and PR title match project aliases.",
+      "involvement_role": "reviewer",
+      "role_reason": "The user reviewed the pull request but did not author the core implementation.",
       "confidence": 0.87
     }
   ],
   "selected_project_id": "PROJECT-SETTLEMENT-RECON",
+  "selected_project_role": "reviewer",
   "classification_confidence": 0.87,
   "privacy": {
     "level": "internal",
@@ -557,6 +561,11 @@ confidence_thresholds:
   auto_assign_project: 0.78
   suggest_project: 0.55
   leave_unclassified_below: 0.55
+
+project_role_thresholds:
+  core_contributor: 0.75
+  side_helper: 0.55
+  observer: 0.40
 ```
 
 ### 6.5 config/departments.yaml
@@ -945,6 +954,8 @@ created_at: ISO_TIMESTAMP
 updated_at: ISO_TIMESTAMP
 quarter: 2026-Q2
 confidence: 0.00
+user_involvement_role: core_contributor
+role_confidence: 0.00
 ---
 
 # PROJECT-ID: Project Name
@@ -966,6 +977,13 @@ What does not belong to this project.
 - Google:
 
 ## Current Status
+
+## User Involvement Role
+
+- Role:
+- Evidence:
+- Confidence:
+- Notes:
 
 ## Timeline Summary
 
@@ -994,6 +1012,19 @@ Append durable evidence pointers.
 
 Use layered classification.
 
+Project association is not enough. The agent must also classify the user's role in the project so side-help and background visibility do not make a project look like owned work.
+
+Supported project involvement roles:
+
+- **owner:** accountable for outcomes, drives planning, owns major decisions, or is named as owner/DRI.
+- **core_contributor:** authors implementation/docs/analysis, leads delivery, or repeatedly advances the project.
+- **reviewer:** reviews PRs/docs/designs/queries or provides approval without owning delivery.
+- **side_helper:** gives occasional advice, answers a question, joins one thread, or helps unblock a small task.
+- **observer:** receives updates, is in the channel, attends broad meetings, or is mentioned without meaningful action.
+- **unknown:** evidence is insufficient or conflicting.
+
+Default rollups should emphasize owner and core_contributor projects, include reviewer projects when useful, and keep side_helper/observer projects in a separate "supporting involvement" or "background visibility" section.
+
 ### 13.1 Deterministic matching
 
 Signals:
@@ -1006,6 +1037,20 @@ Signals:
 - Calendar event title mapped to project.
 - Known collaborator group mapped to project.
 - Existing project alias or keyword.
+
+Role signals:
+
+- GitHub authored PRs, commits, or repeated implementation comments: core_contributor.
+- GitHub review-only activity: reviewer.
+- Slack user starts planning threads, assigns work, or is asked for decisions: owner or core_contributor depending on evidence.
+- Slack one-off advice, reactions, or short unblock replies: side_helper.
+- Slack channel membership, broad announcements, or passive mentions: observer unless there is direct action.
+- Confluence pages authored/maintained by the user for the project: core_contributor or owner if the page names them as owner.
+- Confluence comments or minor edits: reviewer or side_helper.
+- Jira assignee/reporter/owner fields: owner or core_contributor depending on issue type and repeated activity.
+- Jira watcher/subscriber or copied comments: observer.
+- Figma design ownership/comments: core_contributor or reviewer depending on authorship.
+- DataGrip/query analysis used for project decisions: core_contributor for analysis work, reviewer if only validating someone else's query.
 
 ### 13.2 Semantic matching
 
@@ -1029,10 +1074,13 @@ Output:
     {
       "project_id": "PROJECT-ID",
       "confidence": 0.82,
+      "involvement_role": "core_contributor",
+      "role_confidence": 0.76,
       "reason": "The event discusses the same Jira epic and recurring Slack channel as this project."
     }
   ],
   "selected_project_id": "PROJECT-ID",
+  "selected_project_role": "core_contributor",
   "needs_user_review": false
 }
 ```
@@ -1042,6 +1090,13 @@ Output:
 - >= 0.78: assign automatically.
 - 0.55 to 0.77: suggest but mark needs_review.
 - < 0.55: leave unclassified.
+
+Role confidence rules:
+
+- If project confidence is high but role confidence is low, keep the project but mark `selected_project_role: unknown`.
+- Never upgrade observer or side_helper projects into core_contributor without direct authored work, ownership, repeated project advancement, or explicit source evidence.
+- If a project appears only through channel membership, bot notifications, broad meetings, or FYI mentions, classify as observer and exclude from main achievement summaries.
+- If a project appears through one-off help, classify as side_helper and summarize separately from owned/core work.
 
 ### 13.4 New project detection
 
@@ -1348,14 +1403,17 @@ Input:
 - Project aliases.
 - Recent project timelines.
 - Confidence thresholds.
+- Project role thresholds.
 
 For each event:
 1. Identify deterministic project signals.
 2. Identify semantic project candidates.
-3. Assign selected_project_id only if confidence is high enough.
-4. Give a reason for each candidate.
-5. Leave ambiguous events unclassified.
-6. Suggest draft projects for recurring unclassified clusters.
+3. Classify the user's involvement role for each candidate: owner, core_contributor, reviewer, side_helper, observer, or unknown.
+4. Assign selected_project_id only if confidence is high enough.
+5. Assign selected_project_role only if role confidence is high enough.
+6. Give project and role reasons for each candidate.
+7. Leave ambiguous events unclassified or role unknown.
+8. Suggest draft projects for recurring unclassified clusters.
 
 Output valid JSON only.
 ```
@@ -1463,6 +1521,20 @@ After locking, updates must add a correction section:
 ### 16.3 Project timeline principle
 
 Project timelines are append-only JSONL. If an event is reclassified, append a reclassification event.
+
+If the project stays the same but the user's role changes, append a role-reclassification event:
+
+```json
+{
+  "event_type": "project_role_reclassified",
+  "event_id": "role_reclass_EVENT_ID",
+  "target_event_id": "EVENT_ID",
+  "old_project_role": "observer",
+  "new_project_role": "side_helper",
+  "reason": "New skill version distinguishes one-off Slack help from core contribution.",
+  "created_at": "ISO_TIMESTAMP"
+}
+```
 
 ---
 
@@ -1626,9 +1698,11 @@ Before updating local traces, compare the current skill hashes with `state/skill
 
 1. If unchanged, continue normally.
 2. If changed, summarize what changed at a behavior level.
-3. Decide whether old trace records need migration, annotation, or no action.
-4. Record the decision in `logs/skill-update-log.md`.
-5. Update `state/skill_snapshot.json` after the run.
+3. Check whether the change affects schemas, privacy, source discovery, project association, project-role classification, rollups, or output format.
+4. Decide whether old trace records need migration, annotation, role reclassification, rollup refresh, or no action.
+5. Record the decision in `logs/skill-update-log.md`.
+6. If project-role rules changed, scan existing project timelines and mark likely observer/side_helper projects for review before future rollups.
+7. Update `state/skill_snapshot.json` after the run.
 
 Do not rewrite old daily/project records only because the skill changed. Prefer appending migration notes or updating rollups unless the user explicitly asks to reprocess records.
 
