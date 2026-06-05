@@ -9,6 +9,12 @@ Claude/Codex-compatible personal agent plugin for maintaining evidence-backed wo
 - `skills/personal-work-memory/SKILL.md` - shared work-memory skill.
 - `skills/personal-work-memory-init/SKILL.md` - initialization skill for empty stores.
 - `skills/personal-history-chat/SKILL.md` - chat and insight skill for existing history.
+- `.agents/skills/` - Codex-style project-local skill copies for immediate discovery.
+- `.claude/skills/` - Claude Code project-local skill copies for immediate discovery.
+- `.codex/AGENTS.md` - Codex-specific project skill guidance.
+- `SKILL_UPDATES.md` - update record for this plugin's skills.
+- `SKILL_SYNC_CONTRACT.md` - contract for canonical skills and generated mirrors.
+- `.githooks/pre-commit` - syncs generated mirrors before commit.
 - `personal-work-trace/` - local private work trace store, ignored by git.
 
 ## Usage
@@ -20,6 +26,19 @@ Ask an agent to use:
 - `$personal-history-chat` to chat with local history and learn how an AI should navigate the trace structure.
 
 The skill should use whichever source plugins, MCP connectors, app connectors, local files, or manual notes are available in the current agent runtime.
+
+When starting a new Claude Code or Codex chat inside this folder, the skills should be discoverable from the project-local mirrors:
+
+- Codex: `.agents/skills/`
+- Claude Code: `.claude/skills/`
+
+Canonical edits belong in `skills/`. After editing, run `./scripts/sync-project-skills.sh` to refresh both mirrors.
+
+The repo also has a tracked pre-commit hook that runs the same sync and stages only the generated mirror directories. Enable it once with:
+
+```bash
+git config core.hooksPath .githooks
+```
 
 ## Simple Prompts
 
@@ -46,3 +65,18 @@ The skill should use whichever source plugins, MCP connectors, app connectors, l
 - Customer Support and Operations users are out of scope unless explicitly added.
 - During init, use Slack profile department as the first categorisation signal and ask when confidence is low.
 - For Confluence team spaces, ignore pages not updated in the last 24 months unless the user explicitly names them.
+
+## Source Discovery
+
+- Use available connectors first: Slack, Jira, GitHub, Confluence, Google, Figma/FigJam, and other MCPs.
+- If Google/Jira/Confluence/Figma connectors are unavailable, use Slack signals where possible: bot posts, channel membership, daily channels, on-call channels, and `@` mentions.
+- Bot messages are evidence pointers, not final truth. Keep confidence lower and ask when ambiguous.
+- If available sources are too thin, ask the user to add connectors or provide manual seed data.
+- For large Slack/wiki/backfill context, use subagents when the current agent supports them.
+
+## Skill Snapshot
+
+- Each local trace store should keep `personal-work-trace/state/skill_snapshot.json`.
+- Each local trace store should keep `personal-work-trace/logs/skill-update-log.md`.
+- When skills change, compare the current skill snapshot with the stored snapshot before updating old traces.
+- Prefer migration notes or rollup updates over rewriting historical daily records.

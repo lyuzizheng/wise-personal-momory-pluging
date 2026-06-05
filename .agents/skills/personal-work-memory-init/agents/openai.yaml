@@ -1,0 +1,8 @@
+interface:
+  display_name: "Personal Work Memory Init"
+  short_description: "Seed an empty work trace store."
+  brand_color: "#7C3AED"
+  default_prompt: "Use $personal-work-memory-init to seed my empty personal work trace store."
+
+policy:
+  allow_implicit_invocation: true

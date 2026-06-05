@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+
+"$ROOT/scripts/sync-project-skills.sh"
+
+git add \
+  "$ROOT/.agents/skills" \
+  "$ROOT/.claude/skills"
+
+if ! git diff --quiet -- "$ROOT/skills" "$ROOT/.agents/skills" "$ROOT/.claude/skills"; then
+  echo "Skill mirrors were refreshed by the pre-commit hook."
+fi
+
+echo "Skill mirror sync complete."

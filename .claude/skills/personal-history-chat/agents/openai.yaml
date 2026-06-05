@@ -1,0 +1,8 @@
+interface:
+  display_name: "Personal History Chat"
+  short_description: "Chat with local work history."
+  brand_color: "#0F766E"
+  default_prompt: "Use $personal-history-chat to answer a question from my local work trace history."
+
+policy:
+  allow_implicit_invocation: true

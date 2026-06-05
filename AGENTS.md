@@ -7,7 +7,11 @@ This repository is a Claude/Codex-compatible personal agent plugin.
 - Codex manifest: `.codex-plugin/plugin.json`
 - Claude manifest: `.claude-plugin/plugin.json`
 - Shared skills: `skills/`
+- Codex project-local skill copies: `.agents/skills/`
+- Claude Code project-local skill copies: `.claude/skills/`
 - Local work trace store: `personal-work-trace/`
+
+Canonical skill edits belong in `skills/`. After editing skills, run `./scripts/sync-project-skills.sh` so new chats started in this folder can discover the mirrored project-local skills.
 
 ## Work Trace Rules
 
@@ -19,6 +23,10 @@ This repository is a Claude/Codex-compatible personal agent plugin.
 - Keep `personal-work-trace/` local and uncommitted. It may contain private or sensitive work records.
 - Do not store secrets, credentials, customer data, or unnecessary personal data.
 - Before running the main daily workflow, prompt the user for temporary daily data to stage as a manual supplement.
+- If direct connectors are unavailable, use Slack bot posts, channel membership, daily/on-call channels, and `@` mentions as lower-confidence evidence pointers.
+- Use Figma/FigJam/design MCPs and other available MCP connectors when relevant.
+- For large Slack/wiki/backfill contexts, use subagents when the current agent supports them.
+- Before updating an existing trace store, compare current skills against `personal-work-trace/state/skill_snapshot.json` and record behavior-impacting changes in `personal-work-trace/logs/skill-update-log.md`.
 
 ## Change Style
 
