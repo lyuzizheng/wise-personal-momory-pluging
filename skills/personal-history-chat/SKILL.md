@@ -26,16 +26,27 @@ Read from the narrowest durable source first:
 
 Prefer summaries and indexes for broad questions. Read event JSONL and raw imports only when the user asks for evidence, attribution, or a specific disputed detail.
 
+For narrow project-and-period questions such as "what changed in CBA last week":
+
+1. Resolve the exact date range first.
+2. Identify the project id and aliases.
+3. Read only scoped project records, rollups, daily records, and event files for that project and period.
+4. Use unrelated weekly/monthly summaries only to confirm coverage gaps, not to summarize other projects.
+5. Do not inspect or report the whole archive unless the user asks for a broad overview.
+
 ## Answering Rules
 
 - Answer from evidence-backed records, not vibes.
 - Say when a conclusion is inferred from multiple records.
 - Distinguish confirmed events from low-confidence project classification.
 - Include event IDs, record paths, or source links when they help the user verify the answer.
+- For project update questions, report exact change points, not a full work-history summary.
+- If there are no change points for the requested project and period, say that directly and stop after the smallest useful coverage note.
+- Do not list unrelated projects, unrelated weekly themes, source inventories, or skill snapshot details unless they directly affect the answer.
 - Do not quote private message or transcript content unless the record explicitly marks it safe to quote.
 - If the history is missing data, say what is missing and suggest the smallest useful backfill.
 - Do not update files during a chat unless the user asks to save, correct, backfill, or append something.
-- If `skill_snapshot.json` indicates the trace was produced by an older skill version, mention relevant behavior changes before drawing conclusions.
+- If `skill_snapshot.json` indicates the trace was produced by an older skill version, mention behavior changes only when they affect the current question.
 
 ## Insight Modes
 
@@ -61,7 +72,36 @@ If `personal-work-trace/` is empty, missing, or too sparse to answer:
 
 ## Output Shape
 
-For most answers, use:
+For narrow project-and-period update questions, use this compact format by default:
+
+```markdown
+Short answer: [one sentence naming PROJECT and exact date range.]
+
+Change points:
+- [DATE or period]: [exact change/update]. Evidence: [event id or file path]. Confidence: [only if not high].
+
+Coverage: [one short sentence only if data is missing, sparse, or ambiguous.]
+```
+
+Rules for this format:
+
+- Keep it under 6 bullets unless the user asks for detail.
+- If there are no changes, write `Change points: none found in the local trace for this period`.
+- In no-change/no-evidence cases, do not summarize other active projects. Mention only the requested project, requested date range, and the specific missing coverage that affects confidence.
+- Evidence should be inline with each change point; avoid a separate evidence dump.
+- Do not include suggested next steps unless missing coverage prevents a useful answer.
+
+No-evidence example:
+
+```markdown
+Short answer: No evidence-backed CBA updates were found for May 25-31, 2026.
+
+Change points: none found in the local trace for this period.
+
+Coverage: no daily/event records exist for May 25-31, so confidence is limited to local trace coverage.
+```
+
+For broader answers, use:
 
 1. Direct answer.
 2. Evidence used.

@@ -21,3 +21,4 @@
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.
 - Added `SKILL_SYNC_CONTRACT.md` and `.githooks/pre-commit` so commits keep generated skill mirrors current.
 - Tightened `personal-work-memory` so maintenance runs are step-based, use subagents when available, and always refresh or explicitly skip affected weekly/monthly/quarterly rollups after daily/project writes.
+- Tightened `personal-history-chat` output for project-and-period questions so it returns a short answer, exact change points, and only relevant coverage gaps instead of broad unrelated summaries.
