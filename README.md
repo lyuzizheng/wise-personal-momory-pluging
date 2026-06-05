@@ -1,0 +1,1 @@
+# wise-personal-momory-pluging
