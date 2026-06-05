@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personal Work Trace</title>
+    <link rel="stylesheet" href="assets/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Personal work trace</p>
+        <h1>Work memory map</h1>
+      </div>
+      <div class="topbar__meta" id="generatedMeta"></div>
+    </header>
+
+    <main class="layout">
+      <section class="panel panel--overview" aria-labelledby="overviewTitle">
+        <div class="section-title">
+          <h2 id="overviewTitle">Overview</h2>
+          <p id="traceRange"></p>
+        </div>
+        <div class="metric-grid" id="metricGrid"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="timelineTitle">
+        <div class="section-title">
+          <h2 id="timelineTitle">Daily Timeline</h2>
+          <p>Activity by date and project.</p>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="projectsTitle">
+        <div class="section-title section-title--inline">
+          <div>
+            <h2 id="projectsTitle">Projects</h2>
+            <p>Role, status, and recent trace coverage.</p>
+          </div>
+          <div class="filters">
+            <label>
+              <span>Role</span>
+              <select id="roleFilter"></select>
+            </label>
+            <label>
+              <span>Status</span>
+              <select id="statusFilter"></select>
+            </label>
+          </div>
+        </div>
+        <div class="project-grid" id="projectGrid"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="feedTitle">
+        <div class="section-title section-title--inline">
+          <div>
+            <h2 id="feedTitle">Event Feed</h2>
+            <p>Evidence-backed records from daily JSONL event files.</p>
+          </div>
+          <div class="filters">
+            <label>
+              <span>Project</span>
+              <select id="projectFilter"></select>
+            </label>
+            <label>
+              <span>Source</span>
+              <select id="sourceFilter"></select>
+            </label>
+            <label class="search-box">
+              <span>Search</span>
+              <input id="searchInput" type="search" placeholder="summary, title, action">
+            </label>
+          </div>
+        </div>
+        <div class="event-feed" id="eventFeed"></div>
+      </section>
+
+      <section class="panel panel--split" aria-labelledby="signalsTitle">
+        <div>
+          <div class="section-title">
+            <h2 id="signalsTitle">Open Signals</h2>
+            <p>Follow-ups, risks, and source gaps.</p>
+          </div>
+          <div class="signal-list" id="signalList"></div>
+        </div>
+        <div>
+          <div class="section-title">
+            <h2>Rollups</h2>
+            <p>Weekly, monthly, and quarterly summaries when present.</p>
+          </div>
+          <div class="rollup-list" id="rollupList"></div>
+        </div>
+      </section>
+    </main>
+
+    <template id="emptyTemplate">
+      <div class="empty-state">
+        <p class="eyebrow">No trace data</p>
+        <h2>Initialize or refresh your local work trace.</h2>
+        <p>Run <code>node website/scripts/generate-data.mjs</code> after the daily memory workflow. The website can exist before the trace store does.</p>
+      </div>
+    </template>
+
+    <script src="data/work-trace.js"></script>
+    <script src="assets/app.js"></script>
+  </body>
+</html>
+
