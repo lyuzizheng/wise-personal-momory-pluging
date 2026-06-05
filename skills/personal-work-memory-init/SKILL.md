@@ -47,17 +47,43 @@ Treat the store as uninitialized if any of these are true:
 
 Use only capabilities available to the current agent:
 
-1. If Slack profile access is available, read the user's basic profile metadata, especially department, title, team, and timezone.
-2. Use Slack profile department as the first department categorisation signal.
-3. If Google Drive, Confluence, or local files are available, look for explicitly named planning docs such as quarterly planners, team home pages, team member intros, personal onboarding docs, project plans, or operating docs.
-4. For Confluence team spaces, try to find the team home/wiki space first, then inspect fresh team member intro pages and personal onboarding docs for role, team, project, and ritual context.
-5. For Confluence team spaces, ignore pages that were last updated more than 24 months before the init date unless the user explicitly names the page or asks to include stale history.
-6. If Figma, FigJam, design-system, or other MCP connectors are available, use them as lightweight project/design evidence when relevant.
-7. If DataGrip project files, query scratch files, or safe local SQL history are available, use them as lightweight analysis-work evidence through a query-analysis subagent.
-8. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
-9. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
+1. Check for available MCPs by inspecting the system-reminder deferred tools list and looking for `mcp__*` tools.
+2. Check if the user has cloned ai-engineering-hub by searching common clone locations (home directory, dev directory, Documents). If found, scan it for additional MCP configurations or plugins that may not yet be installed but could be useful for initialization.
+3. If Slack profile access is available, read the user's basic profile metadata, especially department, title, team, and timezone.
+4. Use Slack profile department as the first department categorisation signal.
+5. If Google Drive, Confluence, or local files are available, look for explicitly named planning docs such as quarterly planners, team home pages, team member intros, personal onboarding docs, project plans, or operating docs.
+6. For Confluence team spaces, try to find the team home/wiki space first, then inspect fresh team member intro pages and personal onboarding docs for role, team, project, and ritual context.
+7. For Confluence team spaces, ignore pages that were last updated more than 24 months before the init date unless the user explicitly names the page or asks to include stale history.
+8. If Figma, FigJam, design-system, or other MCP connectors are available, use them as lightweight project/design evidence when relevant.
+9. If DataGrip project files, query scratch files, or safe local SQL history are available, use them as lightweight analysis-work evidence through a query-analysis subagent.
+10. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
+11. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
 
 Do not request plugin installation unless the user specifically asks for live connector-backed initialization.
+
+## AI Engineering Hub Discovery
+
+The ai-engineering-hub repository contains additional MCPs and tooling that may be useful for initialization. Check for its presence during the runtime tool selection phase:
+
+1. Search common clone locations:
+   - `~/ai-engineering-hub`
+   - `~/dev/ai-engineering-hub`
+   - `~/Documents/ai-engineering-hub`
+   - `~/projects/ai-engineering-hub`
+   - `~/workspace/ai-engineering-hub`
+2. If found, inspect the repository for:
+   - MCP server configurations in standard locations (`.mcp/` or `mcp-servers/`)
+   - Plugin directories that may contain useful connectors
+   - Configuration files that indicate available integrations
+3. Record discovered MCPs in `knowledge/source-map.md` under an "Available MCPs" section.
+4. Include both currently installed MCPs (from system-reminder deferred tools) and discovered-but-not-installed MCPs from ai-engineering-hub.
+5. For each MCP, note:
+   - Name and source (installed vs ai-engineering-hub)
+   - Primary use case (e.g., Slack, Confluence, Jira, analytics)
+   - Whether it's currently authenticated/available
+   - Relevance to the user's role and projects
+
+Do not automatically install or configure MCPs from ai-engineering-hub. Only note their availability and relevance. If an MCP would significantly improve initialization quality, mention it in the final handoff.
 
 ## Required Init Inputs
 
@@ -237,23 +263,25 @@ Keep private values minimal. Store identifiers and links, not secrets or credent
 ## Initialization Flow
 
 1. Inspect the store and list what exists.
-2. Check whether Slack and Confluence/Atlassian capabilities are available.
-3. If Slack is unavailable, ask for Slack configuration or the main Slack channel before proceeding.
-4. If Confluence/Atlassian is unavailable, ask for Confluence configuration or the team wiki/home URL before proceeding.
-5. Ask the user for the initialization date scope.
-6. Gather available identity/context from current skills, plugins, MCP connectors, local files, or user-provided evidence.
-7. Derive department from Slack profile if available and ask the user to confirm if ambiguous.
-8. Rank Slack channels by importance, then inspect the best candidates for role/project signals.
-9. Find the Confluence/Atlassian team wiki/home space and quarterly planning page.
-10. If main Slack channel, team wiki/home space, or quarterly plans are still missing, ask the user to provide them and stop before writing seed files.
-11. Ask the user for missing big plans, quarterly planner details, and source boundaries.
-12. For Confluence team spaces, inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
-13. Create the seed structure and starter config.
-14. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
-15. Create project definitions only for projects with enough signal to classify future events and the user's likely role in them.
-16. For week, month, or custom date ranges, process each date independently and roll up from available records.
-17. Write `knowledge/source-map.md` with source availability and gaps, important channel selection reasons, stale wiki pages skipped, and connectors that would improve confidence.
-18. Tell the user what was initialized, what is still missing, and which skill to use next.
+2. Check for available MCPs in system-reminder deferred tools list (look for `mcp__*` tools).
+3. Check for ai-engineering-hub repository in common clone locations and scan for additional MCP configurations if found.
+4. Check whether Slack and Confluence/Atlassian capabilities are available.
+5. If Slack is unavailable, ask for Slack configuration or the main Slack channel before proceeding.
+6. If Confluence/Atlassian is unavailable, ask for Confluence configuration or the team wiki/home URL before proceeding.
+7. Ask the user for the initialization date scope.
+8. Gather available identity/context from current skills, plugins, MCP connectors, local files, or user-provided evidence.
+9. Derive department from Slack profile if available and ask the user to confirm if ambiguous.
+10. Rank Slack channels by importance, then inspect the best candidates for role/project signals.
+11. Find the Confluence/Atlassian team wiki/home space and quarterly planning page.
+12. If main Slack channel, team wiki/home space, or quarterly plans are still missing, ask the user to provide them and stop before writing seed files.
+13. Ask the user for missing big plans, quarterly planner details, and source boundaries.
+14. For Confluence team spaces, inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
+15. Create the seed structure and starter config.
+16. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
+17. Create project definitions only for projects with enough signal to classify future events and the user's likely role in them.
+18. For week, month, or custom date ranges, process each date independently and roll up from available records.
+19. Write `knowledge/source-map.md` with source availability and gaps, important channel selection reasons, stale wiki pages skipped, discovered MCPs from ai-engineering-hub, and connectors that would improve confidence.
+20. Tell the user what was initialized, what is still missing, and which skill to use next.
 
 ## Handoff
 
