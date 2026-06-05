@@ -204,20 +204,97 @@
       letter-spacing: 0;
     }
 
-    .image-container {
+    .tree-block {
+      width: min(100%, 980px);
+      font-size: clamp(10px, 1vw, 15px);
+      line-height: 1.35;
+      white-space: pre;
+    }
+
+    .folder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-md);
+      width: min(100%, 980px);
+      margin-top: var(--space-xl);
+    }
+
+    .folder-tile {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: var(--space-lg);
+    }
+
+    .folder-tile strong {
+      display: block;
+      color: var(--highlight);
+      font-size: clamp(16px, 1.3vw, 22px);
+      margin-bottom: var(--space-xs);
+      text-transform: none;
+    }
+
+    .folder-tile span {
+      display: block;
+      color: var(--text-secondary);
+      font-size: var(--size-body-default);
+      line-height: 1.45;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .demo-qr {
       display: flex;
       align-items: center;
       justify-content: center;
       margin-top: var(--space-xl);
-      max-height: 50vh;
     }
 
-    .image-container img {
-      max-width: 90%;
-      max-height: 50vh;
+    .demo-qr img {
+      width: min(46vh, 360px);
+      max-width: 72vw;
+      aspect-ratio: 1;
       object-fit: contain;
-      border-radius: var(--radius);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      border-radius: var(--radius-sm);
+      background: #FFFFFF;
+      padding: var(--space-sm);
+    }
+
+    .demo-shot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: var(--space-lg);
+      width: min(100%, 1080px);
+      height: min(58vh, 470px);
+      background: #FFFFFF;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .demo-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .demo-shot--tall {
+      width: min(100%, 520px);
+      height: min(62vh, 560px);
+    }
+
+    .center-copy {
+      text-align: center;
+      align-items: center;
+    }
+
+    .center-copy p {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (max-width: 700px) {
+      .folder-grid { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: no-preference) {
@@ -280,9 +357,6 @@
     <section class="slide slide--statement">
       <div class="eyebrow">The Problem</div>
       <h2>Your work disappears<br>into disconnected tools</h2>
-      <div class="image-container">
-        <img src="resources/image copy 2.png" alt="Scattered work context across tools">
-      </div>
     </section>
 
     <!-- Slide 3: The Solution -->
@@ -295,9 +369,6 @@
     <section class="slide">
       <div class="eyebrow">What It Is</div>
       <h3>Claude/Codex plugin that maintains evidence-backed work traces</h3>
-      <div class="image-container">
-        <img src="resources/image copy 3.png" alt="Plugin architecture">
-      </div>
     </section>
 
     <!-- Slide 5: Three Skills -->
@@ -313,38 +384,139 @@
       <p><span class="highlight">personal-work-memory-init</span> — Seeds trace store or backfills dates</p>
       <p><span class="highlight">personal-work-memory</span> — Daily records and weekly rollups</p>
       <p><span class="highlight">personal-history-chat</span> — Query your work history</p>
-      <div class="image-container">
-        <img src="resources/image copy 4.png" alt="Skills workflow">
-      </div>
     </section>
 
     <!-- Slide 7: Key Features -->
     <section class="slide">
       <div class="eyebrow">Key Features</div>
       <h3>Evidence links • Project mapping • Time travel • Smart rollups</h3>
-      <div class="image-container">
-        <img src="resources/image copy 5.png" alt="Features overview">
-      </div>
     </section>
 
-    <!-- Slide 8: Getting Started -->
+    <!-- Slide 8: Trace Store -->
     <section class="slide slide--section">
-      <h2>Ready in<br>3 commands</h2>
+      <h2>The work trace<br>is the product</h2>
       <span class="section-number">03</span>
     </section>
 
-    <!-- Slide 9: Quick Start -->
+    <!-- Slide 9: Folder Architecture -->
+    <section class="slide">
+      <div class="eyebrow">Folder Architecture</div>
+      <h3>A local tree agents can read without new infrastructure</h3>
+      <pre class="code-block tree-block">personal-work-trace/
+├── inbox/        raw imports and manual daily supplements
+├── config/       identity, sources, taxonomy, privacy
+├── projects/     active work records and project indexes
+├── daily/        dated evidence-backed work journals
+├── weekly/       rollups for status, planning, and recall
+├── knowledge/    team context, source maps, quarterly plans
+└── state/        cursors, dedupe indexes, skill snapshots</pre>
+    </section>
+
+    <!-- Slide 10: Tree Design -->
+    <section class="slide">
+      <div class="eyebrow">Tree Design</div>
+      <h3>Optimised for agent lookup, not database purity</h3>
+      <div class="folder-grid">
+        <div class="folder-tile">
+          <strong>Evidence first</strong>
+          <span>Every memory points back to source material or a recorded gap.</span>
+        </div>
+        <div class="folder-tile">
+          <strong>Human editable</strong>
+          <span>Markdown and YAML stay easy to inspect, patch, and review.</span>
+        </div>
+        <div class="folder-tile">
+          <strong>Incremental</strong>
+          <span>Cursors and dedupe state let each run update only what changed.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: Getting Started -->
+    <section class="slide slide--section">
+      <h2>Ready in<br>3 commands</h2>
+      <span class="section-number">04</span>
+    </section>
+
+    <!-- Slide 12: Quick Start -->
     <section class="slide">
       <div class="eyebrow">Quick Start</div>
       <div class="code-block">Use $personal-work-memory-init to set up my work trace for today</div>
       <div class="code-block">Use $personal-work-memory to update today's record</div>
       <div class="code-block">Use $personal-history-chat to tell me what moved forward last week</div>
-      <div class="image-container">
-        <img src="resources/image.png" alt="Quick start guide">
+    </section>
+
+    <!-- Slide 13: Product Demo -->
+    <section class="slide slide--section">
+      <h2>Demo the<br>product</h2>
+      <span class="section-number">05</span>
+    </section>
+
+    <!-- Slide 14: Repo Scan -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>Scan the repo link</h3>
+      <p>Use this as the entry point for the walkthrough.</p>
+      <div class="demo-qr">
+        <img src="resources/qrcode.png" alt="QR code linking to the repository">
       </div>
     </section>
 
-    <!-- Slide 10: Closing -->
+    <!-- Slide 15: Demo Trace Folder -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>The trace appears as a readable local tree</h3>
+      <div class="demo-shot demo-shot--tall">
+        <img src="resources/image.png" alt="Personal work trace folder in the editor">
+      </div>
+    </section>
+
+    <!-- Slide 16: Demo Imports -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>Raw connector evidence lands in dated imports</h3>
+      <div class="demo-shot">
+        <img src="resources/image copy.png" alt="Dated inbox imports in the work trace">
+      </div>
+    </section>
+
+    <!-- Slide 17: Demo History Chat -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>Ask a work-history question</h3>
+      <div class="demo-shot">
+        <img src="resources/demo2.png" alt="Personal history chat answering a workflow issue question">
+      </div>
+    </section>
+
+    <!-- Slide 18: Demo Accuracy -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>The answer stays honest about what is recorded</h3>
+      <div class="demo-shot">
+        <img src="resources/demo3.png" alt="Personal history chat explaining recorded conclusions">
+      </div>
+    </section>
+
+    <!-- Slide 19: Demo Map -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>Generate a map of active work</h3>
+      <div class="demo-shot">
+        <img src="resources/demo4.png" alt="Work memory map showing active projects">
+      </div>
+    </section>
+
+    <!-- Slide 20: Demo Rollups -->
+    <section class="slide center-copy">
+      <div class="eyebrow">Demo</div>
+      <h3>Rollups become status-ready summaries</h3>
+      <div class="demo-shot demo-shot--tall">
+        <img src="resources/demo.png" alt="Weekly rollup summary generated from the work trace">
+      </div>
+    </section>
+
+    <!-- Slide 21: Closing -->
     <section class="slide slide--section">
       <h2 style="text-align: center;">Start building<br>your memory</h2>
       <div style="position: absolute; bottom: var(--space-4xl); left: 50%; transform: translateX(-50%); text-align: center;">
