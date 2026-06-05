@@ -61,8 +61,8 @@ Treat this skill as a step-based workflow. A work-memory run is not complete unt
 1. **Skill/state check:** compare current skill snapshot with `personal-work-trace/state/skill_snapshot.json`.
 2. **Date plan:** resolve exact target dates and affected rollup periods in the user's timezone.
 3. **Manual supplement prompt:** ask for temporary daily data before source synthesis.
-4. **Subagent plan:** decide which source, association, synthesis, rollup, and quality agents are needed.
-5. **Source collection:** collect or import evidence for each target date.
+4. **Subagent plan:** build a source-coverage matrix and schedule every applicable source subagent, plus association, synthesis, rollup, and quality agents.
+5. **Source collection:** collect or import evidence for each target date from every applicable source, not only the easiest available source.
 6. **Normalization and privacy:** normalize events, dedupe, and redact unsafe content.
 7. **Project and role association:** classify project and user involvement role for every event.
 8. **Daily write:** write events, daily markdown, and daily summary JSON for each target date.
@@ -71,9 +71,37 @@ Treat this skill as a step-based workflow. A work-memory run is not complete unt
 11. **Quality check:** verify evidence, privacy, project-role confidence, idempotency, and rollup coverage.
 12. **Run log and user summary:** write `logs/YYYY-MM-DD.run.md` and report files updated, skipped phases, gaps, and review items.
 
-If the platform supports subagents, use them for source collection, project association, rollup generation, and quality review whenever the run covers more than one source, more than one date, a broad Slack/wiki context, query-work analysis, or any backfill/rollup request. If subagents are not available, perform the same phases sequentially and say so in the run log.
+If the platform supports subagents, run all applicable source subagents for every maintenance run. If subagents are not available, perform the same source sweep sequentially and say so in the run log.
 
 Never stop after answering from local history when the user asked to maintain or update the work trace. Maintenance runs must write daily/project/rollup outputs or record why no write was possible.
+
+## 0.2 Comprehensive Source Coverage
+
+Every run must build a source-coverage matrix before fetching traces. Include a row for each source that is enabled in config, available in the current runtime, present in local imports, or visible through indirect evidence:
+
+- Manual notes.
+- Slack.
+- GitHub.
+- Jira / Atlassian.
+- Confluence / wiki.
+- Google Calendar.
+- Google Meet.
+- Gmail.
+- Google Drive / Google Docs.
+- Figma / FigJam / design MCPs.
+- DataGrip / query work.
+- Other available MCP or local evidence.
+
+Each row must have one status:
+
+- `subagent_run`: a dedicated source subagent collected evidence.
+- `sequential_fallback`: subagents were unavailable, so the coordinator collected that source sequentially.
+- `indirect_fallback`: the direct connector was unavailable, but bot posts, Slack messages, local imports, or linked records were checked.
+- `disabled_by_config`: config explicitly disabled the source.
+- `unavailable`: no connector, local import, or indirect evidence was available.
+- `skipped_with_reason`: skipped only because privacy, policy, or user instruction required it.
+
+Do not mark a source as covered just because it appears in config. Coverage means the run attempted that source for the target date range and wrote events, imports, or a concrete source gap. Slack-only or GitHub-only output is incomplete when Calendar, Jira, Docs, Gmail, Confluence, or other source capabilities are available.
 
 ## 2. Non-goals
 
@@ -681,24 +709,26 @@ Responsibilities:
 1. Determine exact target dates and affected weekly/monthly/quarterly periods.
 2. Load config, previous state, project definitions, existing daily/project/rollup records, and the skill snapshot.
 3. Build a run checklist from `0.1 Mandatory Run Contract`.
-4. Spawn source agents for sources that are both enabled and available.
-5. Spawn project association, rollup, and quality agents when the current runtime supports subagents.
-6. Validate normalized events.
-7. Dedupe events.
-8. Run project and project-role association.
-9. When target-date records already exist, merge them with new evidence under the latest skill instructions before writing.
-10. Generate or update daily records for every target date.
-11. Update project timelines and indexes for every touched project.
-12. Always evaluate rollups for every affected period and write/update the required rollup files.
-13. Run quality/privacy checks after daily, project, and rollup writes.
-14. Write run log with completed/skipped phases.
-15. Produce review summary for the user.
+4. Build the source-coverage matrix from `0.2 Comprehensive Source Coverage`.
+5. Spawn every applicable source subagent when the current runtime supports subagents.
+6. If a source subagent cannot be spawned, run that source sequentially or record direct/indirect coverage gaps.
+7. Spawn project association, rollup, and quality agents when the current runtime supports subagents.
+8. Validate normalized events.
+9. Dedupe events.
+10. Run project and project-role association.
+11. When target-date records already exist, merge them with new evidence under the latest skill instructions before writing.
+12. Generate or update daily records for every target date.
+13. Update project timelines and indexes for every touched project.
+14. Always evaluate rollups for every affected period and write/update the required rollup files.
+15. Run quality/privacy checks after daily, project, and rollup writes.
+16. Write run log with completed/skipped phases and the full source-coverage matrix.
+17. Produce review summary for the user.
 
 ### 7.2 Source Agents
 
 Each source agent must return normalized work events, not prose only.
 
-Supported source agents, used only when the current runtime has a matching skill, plugin, MCP connector, local import, or user-provided evidence:
+Supported source agents, attempted for every run when enabled, available, locally imported, or indirectly signaled:
 
 - GitHub Trace Agent.
 - Jira Trace Agent.
@@ -713,6 +743,8 @@ Supported source agents, used only when the current runtime has a matching skill
 - Other Available MCP Agent.
 - Manual Notes Agent.
 
+The coordinator must attempt all applicable source agents. It must not stop after the first productive source. If Slack returns events but Google Calendar, Jira, Docs, Gmail, GitHub, or Confluence are enabled or available, those sources still need their own subagent result or explicit coverage-gap status.
+
 If a source has no available runtime capability, try indirect Slack and MCP evidence before skipping it:
 
 - Jira bot messages can indicate issue assignments, status changes, reviews, or project links.
@@ -726,7 +758,7 @@ If a source has no available runtime capability, try indirect Slack and MCP evid
 
 Record indirect evidence as lower confidence unless a source link or explicit assignment confirms it. If external sources are too sparse after this fallback, ask the user to add more connectors or provide manual daily data.
 
-For large context windows, broad backfills, or any rollup repair, use subagents when the platform supports them. Split by source or task, such as Slack signals, delivery sources, design sources, query work, wiki/planning docs, project association, rollup synthesis, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
+For all maintenance runs, use source subagents when the platform supports them. Split by source first, then by task if needed: Slack signals, delivery sources, Jira/Atlassian, wiki/planning docs, Calendar/Meet, Gmail, Docs/Drive, design sources, query work, project association, rollup synthesis, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
 
 Required subagent output shape:
 
@@ -839,10 +871,13 @@ Algorithm:
    - If provided, stage it under `personal-work-trace/inbox/manual/YYYY-MM-DD.md`.
    - If not provided, record `manual_supplement_not_provided` in source coverage.
 3. **Subagent/source phase**
-   - If subagents are available, spawn source subagents in parallel by source or date.
-   - If subagents are unavailable, run the same source collection sequentially.
+   - Build the source-coverage matrix before fetching data.
+   - If subagents are available, spawn all applicable source subagents in parallel by source and target date range.
+   - If subagents are unavailable, run the same all-source collection sequentially.
+   - Attempt each enabled/available/local/indirect source even if another source already returned enough evidence.
+   - For Calendar/Meet, Jira/Atlassian, Gmail, Docs/Drive, Confluence, Figma, GitHub, Slack, query-work, and manual notes, write either normalized events/imports or an explicit source gap.
    - Store raw traces in `inbox/imports/YYYY-MM-DD/*.jsonl`.
-   - Every source or subagent must return events, source gaps, privacy redactions, and files/source objects read.
+   - Every source or subagent must return events, source gaps, privacy redactions, files/source objects read, and a coverage status from `0.2 Comprehensive Source Coverage`.
 4. **Normalize/privacy phase**
    - Normalize traces into event objects.
    - Load existing target-date events and treat them as prior evidence.
@@ -882,7 +917,7 @@ Algorithm:
    - Record non-blocking issues in the run log and user summary.
 10. **State/log phase**
    - Update `state/last_run.json`, cursors, dedupe index, project index, and skill snapshot.
-   - Write `logs/YYYY-MM-DD.run.md` with checklist status, files read, files written, subagents used, skipped phases, source gaps, and rollup coverage.
+   - Write `logs/YYYY-MM-DD.run.md` with checklist status, source-coverage matrix, files read, files written, subagents used, skipped phases, source gaps, and rollup coverage.
    - Return review summary to user.
 
 ---
@@ -1461,16 +1496,18 @@ Inputs:
 - Existing daily/weekly/monthly/project records.
 
 Tasks:
-1. Collect raw traces from enabled source agents.
-2. Normalize traces into event JSONL.
-3. Dedupe events.
-4. Apply privacy filters.
-5. Classify events into projects.
-6. Generate or update the daily record.
-7. Update touched project records.
-8. Update every affected weekly/monthly/quarterly rollup or record an explicit skip reason.
-9. Run quality checks across daily, project, and rollup outputs.
-10. Produce a concise review summary with checklist status and rollup coverage.
+1. Build a source-coverage matrix for every enabled, available, locally imported, or indirectly signaled source.
+2. Run every applicable source subagent, or sequential fallback when subagents are unavailable.
+3. Collect raw traces from all source agents; do not stop after Slack, GitHub, or any first productive source.
+4. Normalize traces into event JSONL.
+5. Dedupe events.
+6. Apply privacy filters.
+7. Classify events into projects.
+8. Generate or update the daily record.
+9. Update touched project records.
+10. Update every affected weekly/monthly/quarterly rollup or record an explicit skip reason.
+11. Run quality checks across daily, project, and rollup outputs.
+12. Produce a concise review summary with checklist status, source coverage, subagent status, and rollup coverage.
 
 Hard rules:
 - Do not invent work.
@@ -1499,6 +1536,11 @@ For each event:
 - Include candidate project signals if obvious.
 - Include privacy flags.
 - Include dedupe_key.
+
+Also return:
+- coverage_status: subagent_run, sequential_fallback, indirect_fallback, disabled_by_config, unavailable, or skipped_with_reason.
+- source_gaps: missing permissions, missing connector, missing import, no activity found, or privacy skip.
+- files_or_records_read: local paths, source object ids, query ids, or connector result ids.
 
 Do not write prose summaries. Do not include raw sensitive content. Do not infer impact.
 ```
@@ -1749,6 +1791,21 @@ Date: YYYY-MM-DD
 - Gmail: skipped/disabled
 - Docs: skipped/disabled
 
+## Source coverage matrix
+
+- Manual notes: subagent_run/sequential_fallback/indirect_fallback/disabled_by_config/unavailable/skipped_with_reason, N events, gap: ...
+- Slack: status, N events, gap: ...
+- GitHub: status, N events, gap: ...
+- Jira / Atlassian: status, N events, gap: ...
+- Confluence / wiki: status, N events, gap: ...
+- Google Calendar: status, N events, gap: ...
+- Google Meet: status, N events, gap: ...
+- Gmail: status, N events, gap: ...
+- Google Drive / Docs: status, N events, gap: ...
+- Figma / design: status, N events, gap: ...
+- DataGrip / query work: status, N events, gap: ...
+- Other MCP/local evidence: status, N events, gap: ...
+
 ## Projects touched
 
 - PROJECT-ID: N events, confidence avg 0.00
@@ -1761,7 +1818,7 @@ Date: YYYY-MM-DD
 
 ## Subagents / phases
 
-- Source collection: subagents used / sequential fallback
+- Source collection: all applicable source subagents run / sequential fallback for listed sources
 - Project association: subagent used / sequential fallback
 - Rollup: subagent used / sequential fallback
 - Quality: pass/fail
@@ -1939,7 +1996,9 @@ The MVP is acceptable when:
 8. Project timeline files update correctly.
 9. Re-running the same day is idempotent.
 10. If the current-day record already exists, the run merges old trace data with new evidence under the latest skill instructions instead of replacing it.
-11. The user can review what changed.
+11. The source coverage matrix includes every enabled, available, locally imported, or indirectly signaled source.
+12. A run with only Slack/GitHub events is marked incomplete when Calendar, Jira, Docs, Gmail, Confluence, or other connectors/imports were available but not attempted.
+13. The user can review what changed.
 
 ---
 

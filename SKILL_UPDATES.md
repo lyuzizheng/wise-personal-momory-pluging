@@ -22,3 +22,4 @@
 - Added `SKILL_SYNC_CONTRACT.md` and `.githooks/pre-commit` so commits keep generated skill mirrors current.
 - Tightened `personal-work-memory` so maintenance runs are step-based, use subagents when available, and always refresh or explicitly skip affected weekly/monthly/quarterly rollups after daily/project writes.
 - Tightened `personal-history-chat` output for project-and-period questions so it returns a short answer, exact change points, and only relevant coverage gaps instead of broad unrelated summaries.
+- Tightened `personal-work-memory` source collection so every enabled, available, locally imported, or indirectly signaled source gets a source subagent/sequential fallback row; Slack/GitHub-only output is now marked incomplete when Calendar, Jira, Docs, Gmail, Confluence, or other available sources were not attempted.

@@ -48,20 +48,25 @@ function renderMeta() {
 }
 
 function renderMetrics() {
-  const stats = data.stats || {};
-  const metrics = [
-    ["Daily records", stats.daily_record_count || 0, "Markdown and summary JSON"],
-    ["Events", stats.event_count || 0, "Normalized JSONL traces"],
-    ["Projects", stats.project_count || 0, "Active and archived patterns"],
-    ["Roles", stats.role_count || 0, "Involvement buckets"],
-    ["Source gaps", stats.source_gap_count || 0, "Coverage notes"]
+  const latestDaily = [...(data.dailyRecords || [])].sort((a, b) => a.date.localeCompare(b.date)).at(-1);
+  const latestWeekly = [...(data.rollups?.weekly || [])].sort((a, b) => String(a.week).localeCompare(String(b.week))).at(-1);
+  const focusProjects = [...(data.projects || [])]
+    .filter((project) => project.recent_updates?.length || project.timeline?.length)
+    .slice(0, 4)
+    .map((project) => project.name)
+    .join(", ");
+
+  const cards = [
+    ["Latest daily summary", latestDaily?.executive_summary || "No daily summary captured yet.", latestDaily?.date],
+    ["Current project focus", focusProjects || "No project updates captured yet.", "from project timelines"],
+    ["Latest rollup", latestWeekly?.executive_summary || "No weekly rollup text captured yet.", latestWeekly?.week]
   ];
 
-  byId("metricGrid").innerHTML = metrics.map(([label, value, hint]) => `
-    <article class="metric">
+  byId("metricGrid").innerHTML = cards.map(([label, summary, hint]) => `
+    <article class="metric metric--text">
       <span>${escapeHtml(label)}</span>
-      <strong>${fmt.format(value)}</strong>
-      <span>${escapeHtml(hint)}</span>
+      <p>${escapeHtml(summary)}</p>
+      <small>${escapeHtml(hint || "")}</small>
     </article>
   `).join("");
 }
@@ -148,14 +153,23 @@ function renderProjects() {
         ${project.role && project.role !== "Unspecified role" ? `<span class="pill pill--blue">${escapeHtml(project.role)}</span>` : ""}
         ${project.role_confidence ? `<span class="pill pill--rose">${escapeHtml(project.role_confidence)} role confidence</span>` : ""}
       </div>
-      <div class="mini-stats">
-        <div class="mini-stat"><strong>${fmt.format(project.event_count || 0)}</strong><span>events</span></div>
-        <div class="mini-stat"><strong>${fmt.format(project.daily_count || 0)}</strong><span>days</span></div>
-        <div class="mini-stat"><strong>${project.latest_date || "none"}</strong><span>latest</span></div>
-      </div>
+      ${renderProjectUpdates(project)}
+      ${renderTextList("Decisions", project.decisions, 3)}
+      ${renderTextList("Follow-ups", project.followups, 3)}
+      ${renderTextList("Risks", project.risks, 2)}
       ${renderAliases(project)}
     </article>
   `).join("") || `<p class="muted">No projects match the current filters.</p>`;
+}
+
+function renderProjectUpdates(project) {
+  const updates = (project.recent_updates || []).map((event) => {
+    const date = event.date ? `${event.date}: ` : "";
+    return `${date}${event.summary || event.title || event.action_type || ""}`.trim();
+  });
+  const fallback = (project.timeline || []).slice(-4).reverse().map((item) => `${item.date || ""}: ${item.summary || ""}`.trim());
+  const items = updates.length ? updates : fallback;
+  return renderTextList("Recent updates", items.length ? items : ["No concrete project update captured yet."], 4);
 }
 
 function renderAliases(project) {
@@ -203,7 +217,7 @@ function renderSignals() {
   byId("signalList").innerHTML = groups.map(([title, items]) => `
     <article class="signal-item">
       <h3>${escapeHtml(title)}</h3>
-      ${items.length ? `<ul>${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>` : `<p class="muted">None captured.</p>`}
+      ${items.length ? `<ul>${items.map((item) => `<li>${escapeHtml(signalText(item))}</li>`).join("")}</ul>` : `<p class="muted">None captured.</p>`}
     </article>
   `).join("");
 }
@@ -218,21 +232,43 @@ function renderRollups() {
   byId("rollupList").innerHTML = rollups.map((rollup) => `
     <article class="rollup-item">
       <h3>${escapeHtml(rollup.kind)}: ${escapeHtml(rollup.label || "unknown")}</h3>
-      <ul>
-        <li>${fmt.format(sumValues(rollup.projects_touched || {}))} project touches</li>
-        <li>${fmt.format((rollup.open_followups || []).length)} open follow-ups</li>
-        <li>${escapeHtml(confidenceLabel(rollup.confidence))}</li>
-      </ul>
+      ${rollup.executive_summary ? `<p>${escapeHtml(rollup.executive_summary)}</p>` : ""}
+      ${renderTextList("Main outcomes", rollup.main_outcomes, 5)}
+      ${renderRollupProjectProgress(rollup.project_progress)}
+      ${renderTextList("Open follow-ups", rollup.open_followups, 6)}
     </article>
   `).join("") || `<p class="muted">No rollups found yet.</p>`;
 }
 
-function sumValues(record) {
-  return Object.values(record).reduce((sum, value) => sum + Number(value || 0), 0);
+function renderRollupProjectProgress(projects = []) {
+  const usefulProjects = projects
+    .filter((project) => project.moved_forward || project.decisions || project.followups || project.risks)
+    .slice(0, 5);
+  if (!usefulProjects.length) return "";
+  return `
+    <div class="rollup-projects">
+      ${usefulProjects.map((project) => `
+        <section>
+          <h4>${escapeHtml(project.name || project.project_id)}</h4>
+          ${project.moved_forward ? `<p>${escapeHtml(project.moved_forward)}</p>` : ""}
+          ${project.decisions && !/^none captured/i.test(project.decisions) ? `<p><strong>Decision:</strong> ${escapeHtml(project.decisions)}</p>` : ""}
+          ${project.followups && !/^none captured/i.test(project.followups) ? `<p><strong>Follow-up:</strong> ${escapeHtml(project.followups)}</p>` : ""}
+          ${project.risks && !/^none captured/i.test(project.risks) ? `<p><strong>Risk:</strong> ${escapeHtml(project.risks)}</p>` : ""}
+        </section>
+      `).join("")}
+    </div>
+  `;
 }
 
-function confidenceLabel(value) {
-  return typeof value === "number" ? `${Math.round(value * 100)}% confidence` : "confidence not set";
+function renderTextList(title, items = [], limit = 4) {
+  const visible = items.map(signalText).filter(Boolean).slice(0, limit);
+  if (!visible.length) return "";
+  return `
+    <div class="text-list">
+      <h4>${escapeHtml(title)}</h4>
+      <ul>${visible.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+    </div>
+  `;
 }
 
 function formatDateTime(value) {
@@ -270,6 +306,14 @@ function rolePillClass(role) {
     side_helper: "pill--role-side",
     observer: "pill--role-observer"
   }[normalizeRole(role)] || "pill--role-unknown";
+}
+
+function signalText(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "object") return signalText(value.summary || value.text || value.title || value.value || value.id || JSON.stringify(value));
+  return "";
 }
 
 function unique(values) {

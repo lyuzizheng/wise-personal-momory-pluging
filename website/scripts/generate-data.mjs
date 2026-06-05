@@ -125,6 +125,7 @@ async function readDailyRecords(root) {
       source_gaps: summary.source_gaps || [],
       executive_summary: extractSection(markdown, "Executive Summary"),
       delta: extractSection(markdown, "Delta vs Previous Day"),
+      project_activity: extractProjectActivity(markdown),
       sources_covered: frontmatter.sources_covered || {},
       path: rel(root, markdownPath)
     });
@@ -217,6 +218,16 @@ async function readProjects(root, events, dailyRecords) {
     const projectEvents = events.filter((event) => event.project_id === project.id);
     const latestDate = projectEvents.map((event) => event.date).filter(Boolean).sort().at(-1) || null;
     const roleCounts = countBy(projectEvents.map((event) => event.project_role));
+    const recentEvents = [...projectEvents]
+      .sort((a, b) => String(b.timestamp || b.date).localeCompare(String(a.timestamp || a.date)))
+      .slice(0, 4)
+      .map((event) => ({
+        date: event.date,
+        title: event.title,
+        summary: event.summary,
+        action_type: event.action_type,
+        role: event.project_role
+      }));
     return {
       ...project,
       name: project.name || titleFromId(project.id),
@@ -224,6 +235,7 @@ async function readProjects(root, events, dailyRecords) {
       role: project.role || "Unspecified role",
       involvement_role: effectiveInvolvementRole(project, roleCounts),
       role_counts: roleCounts,
+      recent_updates: recentEvents,
       event_count: projectEvents.length,
       daily_count: dailyTouches.get(project.id)?.size || 0,
       latest_date: latestDate,
@@ -288,15 +300,25 @@ async function readProjectDetails(root, dir, project) {
   const result = {};
   const timeline = await readJsonl(path.join(dir, "timeline.jsonl"));
   result.timeline_count = timeline.length;
+  result.timeline = timeline
+    .map((item) => ({
+      date: item.date,
+      summary: signalText(item.summary || item.raw_title || item.event_id),
+      event_id: item.event_id,
+      confidence: item.confidence
+    }))
+    .filter((item) => item.summary)
+    .slice(-8);
   result.paths = unique([...(project.paths || []), rel(root, dir)]);
 
   for (const [key, file] of [
-    ["decisions_count", "decisions.md"],
-    ["followups_count", "followups.md"],
-    ["risks_count", "risks.md"]
+    ["decisions", "decisions.md"],
+    ["followups", "followups.md"],
+    ["risks", "risks.md"]
   ]) {
     const content = await readOptional(path.join(dir, file));
-    result[key] = countMarkdownBullets(content);
+    result[key] = markdownBullets(content).filter((item) => !/^no .*captured/i.test(item) && !/^none captured/i.test(item));
+    result[`${key}_count`] = result[key].length;
   }
 
   if (!project.definition || !project.current_status) {
@@ -323,9 +345,14 @@ async function readSummaryFiles(root, dir, pattern, labelKey) {
   for (const file of files) {
     const value = await readJson(file);
     if (!value) continue;
+    const markdown = await readOptional(file.replace(".summary.json", ".md"));
     rows.push({
       ...value,
       [labelKey]: value[labelKey] || path.basename(file).replace(".summary.json", ""),
+      executive_summary: extractSection(markdown, "Executive Summary"),
+      main_outcomes: markdownBullets(rawSection(markdown, "Main Outcomes")),
+      project_progress: extractRollupProjectProgress(markdown),
+      open_followups: (value.open_followups || []).map(signalText).filter(Boolean),
       path: rel(root, file)
     });
   }
@@ -339,24 +366,24 @@ function collectSignals(dailyRecords, events, projects, rollups) {
 
   for (const record of dailyRecords) sourceGaps.push(...(record.source_gaps || []));
   for (const event of events) {
-    followups.push(...(event.followups || []));
-    risks.push(...(event.risks || []));
+    followups.push(...(event.followups || []).map(signalText));
+    risks.push(...(event.risks || []).map(signalText));
   }
   for (const project of projects) {
-    if (project.followups_count) followups.push(`${project.name}: ${project.followups_count} project follow-up entries`);
-    if (project.risks_count) risks.push(`${project.name}: ${project.risks_count} project risk entries`);
+    followups.push(...(project.followups || []).map((item) => `${project.name}: ${item}`));
+    risks.push(...(project.risks || []).map((item) => `${project.name}: ${item}`));
   }
   for (const group of Object.values(rollups)) {
     for (const rollup of group) {
-      followups.push(...(rollup.open_followups || []));
-      sourceGaps.push(...(rollup.source_gaps || []));
+      followups.push(...(rollup.open_followups || []).map(signalText));
+      sourceGaps.push(...(rollup.source_gaps || []).map(signalText));
     }
   }
 
   return {
-    followups: unique(followups.filter(Boolean)),
-    risks: unique(risks.filter(Boolean)),
-    source_gaps: unique(sourceGaps.filter(Boolean))
+    followups: unique(followups.map(signalText).filter(Boolean)),
+    risks: unique(risks.map(signalText).filter(Boolean)),
+    source_gaps: unique(sourceGaps.map(signalText).filter(Boolean))
   };
 }
 
@@ -556,6 +583,76 @@ function cleanMarkdown(text) {
 
 function countMarkdownBullets(text) {
   return String(text || "").split(/\r?\n/).filter((line) => /^\s*[-*]\s+\S/.test(line)).length;
+}
+
+function markdownBullets(text) {
+  return String(text || "")
+    .split(/\r?\n/)
+    .map((line) => line.match(/^\s*[-*]\s+(.*)$/)?.[1]?.trim())
+    .filter(Boolean);
+}
+
+function extractProjectActivity(markdown) {
+  const section = rawSection(markdown, "Project Activity");
+  if (!section) return [];
+  return section.split(/^### /m).slice(1).map((chunk) => {
+    const [heading, ...rest] = chunk.split(/\r?\n/);
+    const body = rest.join("\n");
+    const [projectId, ...nameParts] = heading.split(":");
+    return {
+      project_id: projectId.trim(),
+      name: nameParts.join(":").trim() || titleFromId(projectId.trim()),
+      summary: bulletField(body, "Summary"),
+      decisions: nestedBulletsAfter(body, "New decisions"),
+      followups: nestedBulletsAfter(body, "Follow-ups"),
+      blockers: nestedBulletsAfter(body, "Blockers")
+    };
+  }).filter((item) => item.project_id);
+}
+
+function extractRollupProjectProgress(markdown) {
+  const section = rawSection(markdown, "Project Progress");
+  if (!section) return [];
+  return section.split(/^### /m).slice(1).map((chunk) => {
+    const [heading, ...rest] = chunk.split(/\r?\n/);
+    const body = rest.join("\n");
+    const [projectId, ...nameParts] = heading.split(":");
+    return {
+      project_id: projectId.trim(),
+      name: nameParts.join(":").trim() || titleFromId(projectId.trim()),
+      moved_forward: bulletField(body, "What moved forward"),
+      decisions: bulletField(body, "Decisions"),
+      followups: bulletField(body, "Follow-ups"),
+      risks: bulletField(body, "Risks")
+    };
+  }).filter((item) => item.project_id);
+}
+
+function rawSection(markdown, heading) {
+  if (!markdown) return "";
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`^## ${escaped}\\s*\\r?\\n([\\s\\S]*?)(?=^## |\\z)`, "m");
+  return markdown.match(pattern)?.[1]?.trim() || "";
+}
+
+function bulletField(text, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = text.match(new RegExp(`^\\s*- ${escaped}:\\s*(.*)$`, "m"));
+  return signalText(match?.[1]);
+}
+
+function nestedBulletsAfter(text, label) {
+  const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = text.match(new RegExp(`^\\s*- ${escaped}:\\s*(?:\\r?\\n([\\s\\S]*?))?(?=^\\s*- [A-Z][^\\n:]*:|\\z)`, "m"));
+  return markdownBullets(match?.[1] || "").map(signalText).filter(Boolean);
+}
+
+function signalText(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "object") return signalText(value.summary || value.text || value.title || value.value || value.id || JSON.stringify(value));
+  return "";
 }
 
 function firstProjectCandidate(candidates) {
