@@ -57,6 +57,23 @@ Canonical edits belong in `skills/`. The tracked pre-commit hook refreshes both 
 git config core.hooksPath .githooks
 ```
 
+## Presentation
+
+The `wise-personal-work-memory.html` file contains a Wise-branded HTML presentation about this plugin.
+
+**Pre-commit Hook**: The pre-commit hook will block commits if `README.md` or other documentation files have changed but the presentation hasn't been updated. When this happens:
+
+1. Run `/frontend-slides` in Claude Code
+2. Select the option to regenerate the presentation
+3. Stage the updated HTML file: `git add wise-personal-work-memory.html`
+4. Re-attempt your commit
+
+Or use the helper script:
+
+```bash
+./regenerate-slides.sh
+```
+
 ## Simple Prompts
 
 - `Use $personal-work-memory-init to set up my work trace for today.`

@@ -433,24 +433,31 @@
       <span class="section-number">04</span>
     </section>
 
+    <!-- Setup -->
+    <section class="slide">
+      <div class="eyebrow">One-Time Setup</div>
+      <h3>Enable the pre-commit hook</h3>
+      <div class="code-block">git config core.hooksPath .githooks</div>
+    </section>
+
     <!-- Command 1 -->
     <section class="slide">
       <div class="eyebrow">Step 1: Initialize</div>
-      <div class="code-block">$ personal-work-memory-init</div>
+      <div class="code-block">Use $personal-work-memory-init to set up my work trace for today</div>
       <p>Seeds your work trace for today or backfills a date range.</p>
     </section>
 
     <!-- Command 2 -->
     <section class="slide">
       <div class="eyebrow">Step 2: Update</div>
-      <div class="code-block">$ personal-work-memory</div>
+      <div class="code-block">Use $personal-work-memory to update today's record</div>
       <p>Runs daily to capture today's work and update summaries.</p>
     </section>
 
     <!-- Command 3 -->
     <section class="slide">
       <div class="eyebrow">Step 3: Query</div>
-      <div class="code-block">$ personal-history-chat</div>
+      <div class="code-block">Use $personal-history-chat to tell me what moved forward last week</div>
       <p>Ask questions like "What moved forward last week?"</p>
     </section>
 
@@ -465,49 +472,134 @@
       </ul>
     </section>
 
-    <!-- Section: Use Cases -->
+    <!-- Section: Structure -->
     <section class="slide slide--section">
-      <h2>What's<br>possible</h2>
+      <h2>How it's<br>organized</h2>
       <span class="section-number">05</span>
     </section>
 
-    <!-- Use Case 1 -->
+    <!-- Plugin Compatibility -->
     <section class="slide">
-      <div class="eyebrow">Use Case</div>
-      <h3>Weekly status reports</h3>
-      <p>Generate evidence-backed summaries for standups and 1:1s.</p>
+      <div class="eyebrow">Dual Compatibility</div>
+      <h3>Works with Claude Code and Codex</h3>
+      <p>Plugin manifests for both .claude-plugin/ and .codex-plugin/</p>
     </section>
 
-    <!-- Use Case 2 -->
+    <!-- Skill Discovery -->
     <section class="slide">
-      <div class="eyebrow">Use Case</div>
-      <h3>Project timelines</h3>
-      <p>Trace all work related to a specific project across tools and dates.</p>
+      <div class="eyebrow">Project-Local Skills</div>
+      <h3>Immediate discovery</h3>
+      <p>Skills copied to .claude/skills/ and .agents/skills/ for automatic detection.</p>
     </section>
 
-    <!-- Use Case 3 -->
+    <!-- Git Hook -->
     <section class="slide">
-      <div class="eyebrow">Use Case</div>
-      <h3>Follow-up extraction</h3>
-      <p>Surface action items from Slack threads, meetings, and code reviews.</p>
+      <div class="eyebrow">Automation</div>
+      <h3>Pre-commit hook syncs everything</h3>
+      <p>Canonical skills in skills/ directory, mirrors auto-update before commit.</p>
     </section>
 
-    <!-- Use Case 4 -->
+    <!-- Presentation Hook -->
     <section class="slide">
-      <div class="eyebrow">Use Case</div>
-      <h3>Onboarding memory</h3>
-      <p>New team members backfill their first weeks to build a searchable trace.</p>
+      <div class="eyebrow">Presentation Workflow</div>
+      <h3>Automated regeneration check</h3>
+      <p>Pre-commit hook blocks commits when docs change but presentation hasn't been updated.</p>
     </section>
 
-    <!-- Closing Statement -->
-    <section class="slide slide--statement">
-      <h2>Your work,<br>connected<br>and searchable</h2>
+    <!-- Regeneration -->
+    <section class="slide">
+      <div class="eyebrow">Regenerate Slides</div>
+      <h3>Run /frontend-slides in Claude Code</h3>
+      <p>Or use the helper script: ./regenerate-slides.sh</p>
+    </section>
+
+    <!-- Section: Date Handling -->
+    <section class="slide slide--section">
+      <h2>Smart date<br>management</h2>
+      <span class="section-number">06</span>
+    </section>
+
+    <!-- Date Defaults -->
+    <section class="slide">
+      <div class="eyebrow">Defaults</div>
+      <h3>Daily runs default to today's local date</h3>
+      <p>Relative dates resolved to exact dates before writing.</p>
+    </section>
+
+    <!-- Out of Order -->
+    <section class="slide">
+      <div class="eyebrow">Flexibility</div>
+      <h3>Dates can be updated out of order</h3>
+      <p>Rollups list missing dates as gaps, no strict chronological requirement.</p>
+    </section>
+
+    <!-- Backfilling -->
+    <section class="slide">
+      <div class="eyebrow">Backfilling</div>
+      <h3>Week or month backfills work date by date</h3>
+      <p>Agents work through visible checklists to track progress.</p>
+    </section>
+
+    <!-- Section: Department Rules -->
+    <section class="slide slide--section">
+      <h2>Fintech-aware<br>categorization</h2>
+      <span class="section-number">07</span>
+    </section>
+
+    <!-- Department Structure -->
+    <section class="slide">
+      <div class="eyebrow">Department Categories</div>
+      <h3>Fintech company structure</h3>
+      <p>Engineering, Product, Design, Compliance, Legal, Risk, Finance, Treasury, Data, Security, Privacy, People, Marketing, Business Development, Banking, Strategy.</p>
+    </section>
+
+    <!-- Slack Department Signal -->
+    <section class="slide">
+      <div class="eyebrow">Init Signal</div>
+      <h3>Slack profile department as first signal</h3>
+      <p>Agents ask when confidence is low.</p>
+    </section>
+
+    <!-- Wiki Discovery -->
+    <section class="slide">
+      <div class="eyebrow">Confluence Integration</div>
+      <h3>Team wikis and onboarding docs</h3>
+      <p>Ignores pages not updated in the last 24 months unless explicitly named.</p>
+    </section>
+
+    <!-- Section: Skill Versioning -->
+    <section class="slide slide--section">
+      <h2>Version<br>tracking</h2>
+      <span class="section-number">08</span>
+    </section>
+
+    <!-- Skill Snapshot -->
+    <section class="slide">
+      <div class="eyebrow">Skill Snapshot</div>
+      <h3>Each trace store tracks skill versions</h3>
+      <p>Stored in personal-work-trace/state/skill_snapshot.json</p>
+    </section>
+
+    <!-- Update Log -->
+    <section class="slide">
+      <div class="eyebrow">Update Log</div>
+      <h3>Changes are documented</h3>
+      <p>personal-work-trace/logs/skill-update-log.md captures behavior changes.</p>
+    </section>
+
+    <!-- Migration Strategy -->
+    <section class="slide">
+      <div class="eyebrow">Migration Strategy</div>
+      <h3>Compare snapshots before updating old traces</h3>
+      <p>Prefer migration notes over rewriting historical records.</p>
     </section>
 
     <!-- Closing Slide -->
     <section class="slide slide--section">
-      <h2>Wise Personal<br>Work Memory</h2>
-      <p class="tagline" style="color: var(--wise-forest-green); text-transform: none;">github.com/wise/wise-personal-memory-plugin</p>
+      <h2 style="text-align: center;">Start building<br>your memory</h2>
+      <div style="position: absolute; bottom: var(--space-4xl); left: 50%; transform: translateX(-50%); text-align: center;">
+        <p class="tagline">Evidence-backed work traces for Claude & Codex</p>
+      </div>
     </section>
 
   </div>
@@ -541,7 +633,6 @@
         }
       });
     }, { threshold: 0.5 });
-
     slides.forEach(s => observer.observe(s));
 
     goTo(0);
