@@ -59,6 +59,20 @@ Use only capabilities available to the current agent:
 
 Do not request plugin installation unless the user specifically asks for live connector-backed initialization.
 
+## Required Init Inputs
+
+Do not proceed with initialization until these seed inputs are discovered or provided:
+
+- Main Slack channel for the team or workstream.
+- Confluence or Atlassian team wiki/home space.
+- Quarterly plans, planning page, or current big-plan document.
+
+If Slack skill/MCP access is unavailable, warn the user and ask them to either configure Slack access or provide the main Slack channel manually.
+
+If Confluence/Atlassian skill or MCP access is unavailable, warn the user and ask them to either configure Atlassian/Confluence access or provide the team wiki/home URL and quarterly planning URL manually.
+
+If quarterly plans cannot be discovered from available sources, ask the user for the planning page, planner file, or a short manual list of current big plans before proceeding.
+
 ## Slack Signal Discovery
 
 Slack is often enough to infer useful role and project context even when Google, Jira, Confluence, Figma, or other connectors are unavailable.
@@ -70,6 +84,18 @@ Use these signals when Slack access is available:
 - Mentions: messages where the user is `@` mentioned, assigned, requested for review, tagged for approval, or added to an incident/project thread.
 - On-call signals: membership in on-call channels, on-call bot rotations, incident handoff messages, escalation mentions, and schedule reminders.
 - Daily/standup channels: recurring daily channels can reveal active teams, routines, and current priorities.
+
+Do not scan every joined channel deeply. First rank channels by likely importance, then inspect the top candidates.
+
+Rank channels higher when they:
+
+- match the user's team, department, product area, project names, or Slack profile fields;
+- contain recent `@` mentions of the user;
+- contain bot messages from Jira, Google Meet/Calendar, Confluence, GitHub, Figma, deployment, incident, or on-call apps;
+- look like team home, daily, standup, planning, project, incident, on-call, design, legal, compliance, risk, data, or product channels;
+- have recent activity within the init date scope.
+
+Select a small set of important channels to read first. Record why each channel was selected in `knowledge/source-map.md`.
 
 Do not treat bot messages as final truth. Use them as evidence pointers and confidence signals, then confirm ambiguous role, department, or project conclusions with the user.
 
@@ -156,6 +182,8 @@ When using a Confluence team space during init:
 - Store stale-page skips in `knowledge/source-map.md` as coverage notes, not as project evidence.
 - If the user provides a specific old URL, include it only as an explicit user-provided pointer and mark it stale.
 
+When Atlassian/Confluence access is available, search for the likely current team space using the user's Slack team/department/title, main Slack channel names, project names, Jira project keys, and quarterly plan names. Prefer official team spaces over random linked pages.
+
 ## Seed Questions
 
 Ask for missing seed data in small batches. Prefer asking for 3-6 bullets, not a large form.
@@ -209,18 +237,23 @@ Keep private values minimal. Store identifiers and links, not secrets or credent
 ## Initialization Flow
 
 1. Inspect the store and list what exists.
-2. Gather available identity/context from current skills, plugins, MCP connectors, local files, or user-provided evidence.
-3. Ask the user for the initialization date scope.
-4. Derive department from Slack profile if available and ask the user to confirm if ambiguous.
-5. Analyze Slack channel membership, bot posts, and `@` mentions for role/project signals.
-6. Ask the user for missing big plans, team home wiki URLs, quarterly planner files, and source boundaries.
-7. For Confluence team spaces, find the team wiki/home space, then inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
-8. Create the seed structure and starter config.
-9. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
-10. Create project definitions only for projects with enough signal to classify future events.
-11. For week, month, or custom date ranges, process each date independently and roll up from available records.
-12. Write `knowledge/source-map.md` with source availability and gaps, including stale wiki pages skipped and connectors that would improve confidence.
-13. Tell the user what was initialized, what is still missing, and which skill to use next.
+2. Check whether Slack and Confluence/Atlassian capabilities are available.
+3. If Slack is unavailable, ask for Slack configuration or the main Slack channel before proceeding.
+4. If Confluence/Atlassian is unavailable, ask for Confluence configuration or the team wiki/home URL before proceeding.
+5. Ask the user for the initialization date scope.
+6. Gather available identity/context from current skills, plugins, MCP connectors, local files, or user-provided evidence.
+7. Derive department from Slack profile if available and ask the user to confirm if ambiguous.
+8. Rank Slack channels by importance, then inspect the best candidates for role/project signals.
+9. Find the Confluence/Atlassian team wiki/home space and quarterly planning page.
+10. If main Slack channel, team wiki/home space, or quarterly plans are still missing, ask the user to provide them and stop before writing seed files.
+11. Ask the user for missing big plans, quarterly planner details, and source boundaries.
+12. For Confluence team spaces, inspect fresh team member intro and personal onboarding pages; skip pages older than 24 months without updates unless explicitly named.
+13. Create the seed structure and starter config.
+14. Create or update `state/skill_snapshot.json` with the current plugin and skill metadata.
+15. Create project definitions only for projects with enough signal to classify future events.
+16. For week, month, or custom date ranges, process each date independently and roll up from available records.
+17. Write `knowledge/source-map.md` with source availability and gaps, important channel selection reasons, stale wiki pages skipped, and connectors that would improve confidence.
+18. Tell the user what was initialized, what is still missing, and which skill to use next.
 
 ## Handoff
 

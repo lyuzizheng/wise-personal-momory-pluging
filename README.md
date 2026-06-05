@@ -68,6 +68,9 @@ git config core.hooksPath .githooks
 ## Source Discovery
 
 - Use available connectors first: Slack, Jira, GitHub, Confluence, Google, Figma/FigJam, and other MCPs.
+- Init requires a main Slack channel, Confluence/Atlassian team wiki/home space, and quarterly plans before writing seed files.
+- If Slack or Confluence/Atlassian access is unavailable, the agent should warn and ask for connector setup or manual channel/wiki/plan inputs first.
+- During init, rank Slack channels by importance and inspect the best candidates instead of scanning everything deeply.
 - If Google/Jira/Confluence/Figma connectors are unavailable, use Slack signals where possible: bot posts, channel membership, daily channels, on-call channels, and `@` mentions.
 - For analysts and query-heavy roles, use DataGrip/local SQL files only through sanitized query-work analysis by subagent.
 - Never store query results, credentials, connection strings, raw sensitive SQL, customer identifiers, or PII.

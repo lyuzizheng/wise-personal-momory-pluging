@@ -12,6 +12,8 @@
 - Added Slack fallback discovery using profile data, channel membership, bot messages, on-call/daily channels, and `@` mentions.
 - Added support guidance for Figma, FigJam, design, and other available MCP connectors.
 - Added DataGrip/local SQL query-work support for analysts and query-heavy roles, with subagent analysis and strict no-PII/no-credential handling.
+- Added init gates requiring main Slack channel, Confluence/Atlassian team wiki/home space, and quarterly plans before seed files are written.
+- Added smart Slack channel ranking for init so agents inspect the most important joined channels first.
 - Added subagent guidance for large initialization/backfill contexts.
 - Added local trace skill snapshot policy via `personal-work-trace/state/skill_snapshot.json` and `personal-work-trace/logs/skill-update-log.md`.
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.
