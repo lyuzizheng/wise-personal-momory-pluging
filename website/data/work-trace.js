@@ -1,11 +1,15 @@
 window.WORK_TRACE_DATA = {
   "schema_version": 1,
-  "generated_at": "2026-06-05T10:40:27.631Z",
+  "generated_at": "2026-06-05T12:15:19.043Z",
   "trace": {
     "exists": true,
     "initialized": true,
     "root": "personal-work-trace",
     "user": {
+      "identity": {
+        "preferred_name": "Zizheng",
+        "full_name": "Zizheng Lyu"
+      },
       "department": {
         "category": "Engineering",
         "confidence": 0.9
@@ -16,6 +20,10 @@ window.WORK_TRACE_DATA = {
         "squad": "Regional Platform",
         "tribe": "Regional Expansion",
         "company": "Wise"
+      },
+      "manager_or_lead": {
+        "name": "Vladyslav Chornobai",
+        "confidence": 0.7
       },
       "timezone": {
         "local": "Europe/Tallinn"
@@ -28,12 +36,12 @@ window.WORK_TRACE_DATA = {
   },
   "stats": {
     "daily_record_count": 5,
-    "event_count": 47,
+    "event_count": 58,
     "project_count": 10,
     "role_count": 2,
-    "source_gap_count": 10,
-    "followup_count": 23,
-    "risk_count": 6
+    "source_gap_count": 14,
+    "followup_count": 25,
+    "risk_count": 8
   },
   "dailyRecords": [
     {
@@ -103,24 +111,26 @@ window.WORK_TRACE_DATA = {
     {
       "date": "2026-06-02",
       "confidence": 0.83,
-      "event_count": 12,
+      "event_count": 19,
       "projects_touched": {
-        "configurable-queue": 2,
-        "support-and-on-call": 1,
+        "configurable-queue": 4,
+        "support-and-on-call": 2,
         "cross-team-escalations-zd-ddcase": 3,
         "automating-ops-tasks": 2,
         "retry-volume-control": 1,
-        "case-based-access": 1
+        "case-based-access": 1,
+        "webapp-ninjas-migration": 1
       },
-      "unclassified_event_count": 2,
+      "unclassified_event_count": 5,
       "source_gaps": [
         "private_slack_dm_not_queried_by_default",
         "full_jira_changelog_not_fetched",
         "gmail_disabled_or_not_queried",
         "gdocs_body_not_queried",
+        "some_review_only_github_events_left_unclassified",
         "manual_supplement_prompted_no_new_data"
       ],
-      "executive_summary": "The updated record shows configurable queue cleanup and JEXL validation thinking, PayOps automation framework planning, retry-control support, and the opening/review of several GitHub PRs. Calendar metadata adds CBA and AI-automation planning context, but those meetings remain observer-only unless supported by stronger evidence.",
+      "executive_summary": "The refreshed record adds timestamp-verified GitHub activity that the earlier update missed: a PDIOC-650 dependency PR, routing/configuration reviews, and several review-only PRs that remain supporting or unclassified where project evidence is weak. Configurable queue cleanup, JEXL validation thinking, PayOps automation framework planning, retry-control support, and calendar observer context remain the main themes.",
       "delta": "Planning and support expanded from on-call/config queue into automation-framework and retry-control topics.",
       "project_activity": [
         {
@@ -146,21 +156,24 @@ window.WORK_TRACE_DATA = {
     {
       "date": "2026-06-03",
       "confidence": 0.82,
-      "event_count": 10,
+      "event_count": 12,
       "projects_touched": {
-        "support-and-on-call": 6,
+        "support-and-on-call": 7,
         "webapp-ninjas-migration": 1,
         "configurable-queue": 3
       },
-      "unclassified_event_count": 0,
+      "unclassified_event_count": 1,
       "source_gaps": [
         "private_slack_dm_not_queried_by_default",
         "full_jira_changelog_not_fetched",
         "gmail_disabled_or_not_queried",
         "gdocs_body_not_queried",
+        "google_drive_metadata_only",
+        "meeting_notes_attachments_not_fetched_consent_gated",
+        "one_review_only_github_event_left_unclassified",
         "manual_supplement_prompted_no_new_data"
       ],
-      "executive_summary": "The day is now clearly delivery-heavy: self-service, Samurai, workflow-ui, and dd-case work moved forward, with support investigations around document deletion errors, balance-withdrawal self-assignment, and M2E auto-cancel behavior. The PDI Q2 review/retro is recorded as calendar observer context.",
+      "executive_summary": "The day is delivery-heavy: self-service, Samurai, workflow-ui, and dd-case work moved forward, with support investigations around document deletion errors, balance-withdrawal self-assignment, M2E auto-cancel behavior, and suspended-transfer-delay configuration cleanup. The PDI Q2 review/retro is recorded as calendar observer context, and a Ninjas2 review-only event is left unclassified because project evidence is weak.",
       "delta": "Work shifted from planning-heavy traces into concrete support delivery and merged PRs.",
       "project_activity": [
         {
@@ -216,11 +229,12 @@ window.WORK_TRACE_DATA = {
     {
       "date": "2026-06-04",
       "confidence": 0.84,
-      "event_count": 12,
+      "event_count": 14,
       "projects_touched": {
-        "support-and-on-call": 6,
+        "support-and-on-call": 7,
         "cross-team-escalations-zd-ddcase": 5,
-        "extra-money-payouts": 1
+        "extra-money-payouts": 1,
+        "automating-ops-tasks": 1
       },
       "unclassified_event_count": 0,
       "source_gaps": [
@@ -228,10 +242,11 @@ window.WORK_TRACE_DATA = {
         "full_jira_changelog_not_fetched",
         "gmail_disabled_or_not_queried",
         "gdocs_body_not_queried",
+        "meeting_notes_attachments_not_fetched_consent_gated",
         "manual_supplement_prompted_no_new_data"
       ],
-      "executive_summary": "The updated record shows heavy support delivery and design work: PDIOC-653, PDIOC-652, PDIOC-655, POT-2411, ZD sync, EMPOI recipient handling, and GSO ID API-placement discussion. GitHub review-only POT-2423 work is separated from authored/core contribution.",
-      "delta": "Support delivery continued while ZD sync and EMPOI architecture discussions became more prominent.",
+      "executive_summary": "The updated record shows heavy support delivery and design work: PDIOC-653, PDIOC-652, PDIOC-655, POT-2411, ZD sync, EMPOI recipient handling, GSO ID API-placement discussion, workflow-ui release follow-up, and renewed automation-process planning. GitHub review-only POT-2423 work is separated from authored/core contribution.",
+      "delta": "Support delivery continued while ZD sync, EMPOI architecture, and automation-process planning became more prominent.",
       "project_activity": [
         {
           "project_id": "support-and-on-call",
@@ -587,6 +602,27 @@ window.WORK_TRACE_DATA = {
       "path": "events/2026/06/2026-06-02.events.jsonl"
     },
     {
+      "id": "evt_2026-06-02_github_review_ddcase_pot2440_payops_team",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T11:27:16+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "[POT-2440] drop default for payopsTeam in payops repositories",
+      "summary": "Reviewed dd-case PR activity that removed a default payopsTeam value in PayOps repositories.",
+      "project_id": "configurable-queue",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.8,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
       "id": "evt_2026-06-02_github_twilio_pot_2411_pr3038_open",
       "date": "2026-06-02",
       "timestamp": "2026-06-02T11:33:46+03:00",
@@ -620,6 +656,48 @@ window.WORK_TRACE_DATA = {
       "role_confidence": 0.9,
       "role_reason": "The user reviewed or approved someone else's PR/design without owning delivery.",
       "confidence": 0.84,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-02_github_review_ddcase_recall_routing",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T12:30:30+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "[EUMM-3568] Configure recall request routing",
+      "summary": "Reviewed dd-case recall-request routing configuration PR activity.",
+      "project_id": "configurable-queue",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.79,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-02_github_review_manual_linker_onhold",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T13:52:23+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "[CPL-844] Allow on_hold transactions to be linked in manual linker",
+      "summary": "Reviewed manual-linker PR activity for allowing on-hold transactions to be linked.",
+      "project_id": "manual-internal-transfers",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.5,
       "privacy_level": "internal",
       "safe_to_publish": false,
       "evidence_count": 2,
@@ -702,6 +780,48 @@ window.WORK_TRACE_DATA = {
       "path": "events/2026/06/2026-06-02.events.jsonl"
     },
     {
+      "id": "evt_2026-06-02_github_review_process_orchestrator_loss_recovery",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T15:11:43+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "Add an introduction document for loss recovery process",
+      "summary": "Reviewed payops-process-orchestrator documentation PR activity for a loss-recovery process introduction.",
+      "project_id": "automating-ops-tasks",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.54,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-02_github_regional_batch_pdioc_650_pr256",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T15:12:26+03:00",
+      "source": "github",
+      "action_type": "pull_request_opened",
+      "title": "[PDIOC-650] chore: update dependency",
+      "summary": "Opened a PDIOC-650 dependency-update PR in regional-batch-tooling; the PR was later closed without being promoted as a shipped outcome.",
+      "project_id": "support-and-on-call",
+      "project_role": "core_contributor",
+      "role_confidence": 0.8,
+      "role_reason": "The user authored the PR.",
+      "confidence": 0.78,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
       "id": "evt_2026-06-02_github_review_ddcase_pot2423_group",
       "date": "2026-06-02",
       "timestamp": "2026-06-02T15:40:22+03:00",
@@ -770,6 +890,48 @@ window.WORK_TRACE_DATA = {
       "path": "events/2026/06/2026-06-02.events.jsonl"
     },
     {
+      "id": "evt_2026-06-02_github_review_central_backoffice_email_modal",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T17:08:19+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "Make the email title copyable in admin email preview modal",
+      "summary": "Reviewed central-backoffice PR activity for making email titles copyable in an admin preview modal.",
+      "project_id": null,
+      "project_role": "reviewer",
+      "role_confidence": 0,
+      "role_reason": null,
+      "confidence": 0.45,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-02_github_review_backoffice_annotation_tags_comments",
+      "date": "2026-06-02",
+      "timestamp": "2026-06-02T17:17:37+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "POT-2455: Tag read endpoints implementation",
+      "summary": "Left review comments on the backoffice-annotation tag read endpoints implementation before the later approval on June 3.",
+      "project_id": "webapp-ninjas-migration",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.8,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-02.events.jsonl"
+    },
+    {
       "id": "evt_2026-06-02_calendar_ai_automation_sync",
       "date": "2026-06-02",
       "timestamp": "2026-06-02T17:30:00+03:00",
@@ -803,6 +965,27 @@ window.WORK_TRACE_DATA = {
       "role_confidence": 0.82,
       "role_reason": "The evidence is meeting attendance or background visibility only.",
       "confidence": 0.8,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-03.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-03_github_review_ninjas2_onhold_manual_link",
+      "date": "2026-06-03",
+      "timestamp": "2026-06-03T09:25:21+03:00",
+      "source": "github",
+      "action_type": "pull_request_reviewed",
+      "title": "[CPL-845] Allow manual link for onhold transactions in ninjas",
+      "summary": "Reviewed Ninjas2 PR activity for allowing manual linking of on-hold transactions.",
+      "project_id": "manual-internal-transfers",
+      "project_role": "reviewer",
+      "role_confidence": 0.9,
+      "role_reason": "The user reviewed someone else's PR.",
+      "confidence": 0.5,
       "privacy_level": "internal",
       "safe_to_publish": false,
       "evidence_count": 2,
@@ -1020,6 +1203,27 @@ window.WORK_TRACE_DATA = {
       "path": "events/2026/06/2026-06-03.events.jsonl"
     },
     {
+      "id": "evt_2026-06-03_slack_suspended_transfer_delay_support",
+      "date": "2026-06-03",
+      "timestamp": "2026-06-03T21:29:00+03:00",
+      "source": "slack",
+      "action_type": "support_followup",
+      "title": "Suspended transfer delay support",
+      "summary": "Handled quick support around suspended-transfer delay configuration, including reverting an unsafe configuration change and informing the owner.",
+      "project_id": "support-and-on-call",
+      "project_role": "side_helper",
+      "role_confidence": 0.78,
+      "role_reason": "The user provided targeted support and cleanup rather than owning a broader project outcome.",
+      "confidence": 0.82,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 1,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-03.events.jsonl"
+    },
+    {
       "id": "evt_2026-06-04_calendar_pdi_q3_planning",
       "date": "2026-06-04",
       "timestamp": "2026-06-04T09:00:00+03:00",
@@ -1101,6 +1305,37 @@ window.WORK_TRACE_DATA = {
       "decisions": [],
       "followups": [],
       "risks": [],
+      "path": "events/2026/06/2026-06-04.events.jsonl"
+    },
+    {
+      "id": "evt_2026-06-04_slack_automation_process_planning",
+      "date": "2026-06-04",
+      "timestamp": "2026-06-04T10:55:00+03:00",
+      "source": "slack",
+      "action_type": "project_planning",
+      "title": "PayOps automation process planning",
+      "summary": "Continued automation-process planning around shadow mode, source-outcome comparison, safety gates, and rollback/safety-switch behavior.",
+      "project_id": "automating-ops-tasks",
+      "project_role": "core_contributor",
+      "role_confidence": 0.84,
+      "role_reason": "The user authored planning content and advanced the framework discussion.",
+      "confidence": 0.88,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [
+        {
+          "id": "fu_2026-06-04_automation_safety_process",
+          "summary": "Evaluate where and how to implement automation shadow mode, comparison, safety gate, and rollback behavior."
+        }
+      ],
+      "risks": [
+        {
+          "id": "risk_2026-06-04_automation_ownership",
+          "summary": "Automation-process ownership and implementation location remained unsettled."
+        }
+      ],
       "path": "events/2026/06/2026-06-04.events.jsonl"
     },
     {
@@ -1300,6 +1535,27 @@ window.WORK_TRACE_DATA = {
       "path": "events/2026/06/2026-06-04.events.jsonl"
     },
     {
+      "id": "evt_2026-06-04_slack_workflow_ui_release_followup",
+      "date": "2026-06-04",
+      "timestamp": "2026-06-04T18:19:00+03:00",
+      "source": "slack",
+      "action_type": "release_followup",
+      "title": "workflow-ui support-fix release follow-up",
+      "summary": "Followed up on releasing the latest workflow-ui bundle for the support fix after the PR was merged.",
+      "project_id": "support-and-on-call",
+      "project_role": "core_contributor",
+      "role_confidence": 0.82,
+      "role_reason": "The user drove delivery follow-through after authoring the fix.",
+      "confidence": 0.84,
+      "privacy_level": "internal",
+      "safe_to_publish": false,
+      "evidence_count": 2,
+      "decisions": [],
+      "followups": [],
+      "risks": [],
+      "path": "events/2026/06/2026-06-04.events.jsonl"
+    },
+    {
       "id": "evt_2026-06-05_calendar_regional_platform_offsite",
       "date": "2026-06-05",
       "timestamp": "2026-06-05T10:00:00+03:00",
@@ -1402,26 +1658,8 @@ window.WORK_TRACE_DATA = {
         "projects/active/support-and-on-call",
         "projects/active/support-and-on-call/project.md"
       ],
-      "timeline_count": 18,
+      "timeline_count": 21,
       "timeline": [
-        {
-          "date": "2026-06-04",
-          "summary": "Attended Payment Defects & Incidents Q3 planning.",
-          "event_id": "evt_2026-06-04_calendar_pdi_q3_planning",
-          "confidence": 0.8
-        },
-        {
-          "date": "2026-06-04",
-          "summary": "Merged a dd-case fix allowing suspended transfer auto-snooze configuration to support delay minutes.",
-          "event_id": "evt_2026-06-04_github_ddcase_pdioc_653",
-          "confidence": 0.81
-        },
-        {
-          "date": "2026-06-04",
-          "summary": "Opened and merged a workflow-ui fix to prevent balance self-approval/self-assignment in the support flow.",
-          "event_id": "evt_2026-06-04_github_workflow_ui_pdioc_655",
-          "confidence": 0.86
-        },
         {
           "date": "2026-06-04",
           "summary": "Merged the workflow-ui file deletion error rendering fix.",
@@ -1451,6 +1689,24 @@ window.WORK_TRACE_DATA = {
           "summary": "Continued updating the dd-case PDIOC-655 PR for balance-withdrawal self-assignment prevention.",
           "event_id": "evt_2026-06-05_github_ddcase_pdioc_655_ci_followup",
           "confidence": 0.86
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Opened a PDIOC-650 dependency-update PR in regional-batch-tooling; the PR was later closed without being promoted as a shipped outcome.",
+          "event_id": "evt_2026-06-02_github_regional_batch_pdioc_650_pr256",
+          "confidence": 0.78
+        },
+        {
+          "date": "2026-06-03",
+          "summary": "Handled quick support around suspended-transfer delay configuration, including reverting an unsafe configuration change and informing the owner.",
+          "event_id": "evt_2026-06-03_slack_suspended_transfer_delay_support",
+          "confidence": 0.82
+        },
+        {
+          "date": "2026-06-04",
+          "summary": "Followed up on releasing the latest workflow-ui bundle for the support fix after the PR was merged.",
+          "event_id": "evt_2026-06-04_slack_workflow_ui_release_followup",
+          "confidence": 0.84
         }
       ],
       "decisions": [
@@ -1468,8 +1724,8 @@ window.WORK_TRACE_DATA = {
       "role_counts": {
         "owner": 1,
         "observer": 3,
-        "side_helper": 2,
-        "core_contributor": 12
+        "side_helper": 3,
+        "core_contributor": 14
       },
       "recent_updates": [
         {
@@ -1495,15 +1751,142 @@ window.WORK_TRACE_DATA = {
         },
         {
           "date": "2026-06-04",
-          "title": "PDIOC-654 GSO ID in Samurai",
-          "summary": "Followed up on a request to display Global Switch Off ID in Samurai for suspended POIs and discussed where the ID should be exposed in API responses.",
-          "action_type": "support_request_triaged",
+          "title": "workflow-ui support-fix release follow-up",
+          "summary": "Followed up on releasing the latest workflow-ui bundle for the support fix after the PR was merged.",
+          "action_type": "release_followup",
           "role": "core_contributor"
         }
       ],
-      "event_count": 20,
+      "event_count": 23,
       "daily_count": 5,
       "latest_date": "2026-06-05"
+    },
+    {
+      "id": "configurable-queue",
+      "name": "Configurable queue",
+      "status": "rollout",
+      "priority": "P1",
+      "themes": [
+        "platform_maintenance",
+        "resolution"
+      ],
+      "role": "Engineer",
+      "involvement_role": "core_contributor",
+      "role_confidence": "high",
+      "confidence": null,
+      "aliases": [
+        "config queue",
+        "PayOps routing system",
+        "queue routing"
+      ],
+      "source_links": [
+        "https://transferwise.atlassian.net/wiki/spaces/POT/pages/4058514360/Q2+26+Projects+Overview+-+PDI"
+      ],
+      "definition": "",
+      "current_status": "",
+      "lifecycle": "active",
+      "paths": [
+        "projects/active/configurable-queue",
+        "projects/active/configurable-queue.yaml"
+      ],
+      "timeline_count": 9,
+      "timeline": [
+        {
+          "date": "2026-06-01",
+          "summary": "Discussed configurable queue behavior, including catch-all handling for system alert cases and possible tooling around JEXL/config organization.",
+          "event_id": "evt_2026-06-01_slack_config_queue_system_alert",
+          "confidence": 0.87
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Asked about removing old PayOps queue configs and using the config queue team-group column, offering to split/help with the task.",
+          "event_id": "evt_2026-06-02_slack_config_queue_cleanup",
+          "confidence": 0.91
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Explored the idea of a Java repository/tool to run JEXL routing expressions for configurable queue validation.",
+          "event_id": "evt_2026-06-02_slack_jexl_verifier_idea",
+          "confidence": 0.86
+        },
+        {
+          "date": "2026-06-03",
+          "summary": "Opened the dd-case side of PayOps backlog v1 deprecation work.",
+          "event_id": "evt_2026-06-03_github_ddcase_backlog_v1_pr12658",
+          "confidence": 0.78
+        },
+        {
+          "date": "2026-06-03",
+          "summary": "Merged the Samurai side of PayOps backlog v1 deprecation, keeping Routine backlog on the v2 path.",
+          "event_id": "evt_2026-06-03_github_samurai_backlog_v1",
+          "confidence": 0.78
+        },
+        {
+          "date": "2026-06-03",
+          "summary": "Merged the Routine case assignment and WFM status refactor plan documentation in Samurai.",
+          "event_id": "evt_2026-06-03_github_samurai_wfm_plan",
+          "confidence": 0.8
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Reviewed dd-case PR activity that removed a default payopsTeam value in PayOps repositories.",
+          "event_id": "evt_2026-06-02_github_review_ddcase_pot2440_payops_team",
+          "confidence": 0.8
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Reviewed dd-case recall-request routing configuration PR activity.",
+          "event_id": "evt_2026-06-02_github_review_ddcase_recall_routing",
+          "confidence": 0.79
+        }
+      ],
+      "decisions": [],
+      "decisions_count": 0,
+      "followups": [
+        "2026-06-01: Confirm whether system alert cases should be excluded from catch-all queues. (fu_2026-06-01_config_queue_system_alert).",
+        "2026-06-02: Split or coordinate old-config removal work with Michelle. (fu_2026-06-02_config_queue_cleanup_split).",
+        "2026-06-02: Think through local/offline JEXL validation design for queue routing. (fu_2026-06-02_jexl_verifier)."
+      ],
+      "followups_count": 3,
+      "risks": [],
+      "risks_count": 0,
+      "role_counts": {
+        "reviewer": 3,
+        "core_contributor": 6
+      },
+      "recent_updates": [
+        {
+          "date": "2026-06-03",
+          "title": "[NO JIRA] docs: add case assignment WFM refactor plan",
+          "summary": "Merged the Routine case assignment and WFM status refactor plan documentation in Samurai.",
+          "action_type": "pull_request_merged",
+          "role": "core_contributor"
+        },
+        {
+          "date": "2026-06-03",
+          "title": "[POT-2391] chore: deprecate backlog v1",
+          "summary": "Merged the Samurai side of PayOps backlog v1 deprecation, keeping Routine backlog on the v2 path.",
+          "action_type": "pull_request_merged",
+          "role": "core_contributor"
+        },
+        {
+          "date": "2026-06-03",
+          "title": "[POT-2391] chore: deprecate PayOps backlog v1",
+          "summary": "Opened the dd-case side of PayOps backlog v1 deprecation work.",
+          "action_type": "pull_request_opened",
+          "role": "core_contributor"
+        },
+        {
+          "date": "2026-06-02",
+          "title": "System-alert case forwarding consultation",
+          "summary": "Asked whether system alert cases can be forwarded to other teams and who should be consulted.",
+          "action_type": "requirements_question",
+          "role": "unknown"
+        }
+      ],
+      "event_count": 10,
+      "daily_count": 3,
+      "latest_date": "2026-06-03"
     },
     {
       "id": "cross-team-escalations-zd-ddcase",
@@ -1637,127 +2020,6 @@ window.WORK_TRACE_DATA = {
       "latest_date": "2026-06-04"
     },
     {
-      "id": "configurable-queue",
-      "name": "Configurable queue",
-      "status": "rollout",
-      "priority": "P1",
-      "themes": [
-        "platform_maintenance",
-        "resolution"
-      ],
-      "role": "Engineer",
-      "involvement_role": "core_contributor",
-      "role_confidence": "high",
-      "confidence": null,
-      "aliases": [
-        "config queue",
-        "PayOps routing system",
-        "queue routing"
-      ],
-      "source_links": [
-        "https://transferwise.atlassian.net/wiki/spaces/POT/pages/4058514360/Q2+26+Projects+Overview+-+PDI"
-      ],
-      "definition": "",
-      "current_status": "",
-      "lifecycle": "active",
-      "paths": [
-        "projects/active/configurable-queue",
-        "projects/active/configurable-queue.yaml"
-      ],
-      "timeline_count": 7,
-      "timeline": [
-        {
-          "date": "2026-06-01",
-          "summary": "Reviewed or participated in PR activity for PayOps catch-all queue alerting.",
-          "event_id": "evt_2026-06-01_github_review_catch_all_alerting",
-          "confidence": 0.82
-        },
-        {
-          "date": "2026-06-01",
-          "summary": "Discussed configurable queue behavior, including catch-all handling for system alert cases and possible tooling around JEXL/config organization.",
-          "event_id": "evt_2026-06-01_slack_config_queue_system_alert",
-          "confidence": 0.87
-        },
-        {
-          "date": "2026-06-02",
-          "summary": "Asked about removing old PayOps queue configs and using the config queue team-group column, offering to split/help with the task.",
-          "event_id": "evt_2026-06-02_slack_config_queue_cleanup",
-          "confidence": 0.91
-        },
-        {
-          "date": "2026-06-02",
-          "summary": "Explored the idea of a Java repository/tool to run JEXL routing expressions for configurable queue validation.",
-          "event_id": "evt_2026-06-02_slack_jexl_verifier_idea",
-          "confidence": 0.86
-        },
-        {
-          "date": "2026-06-03",
-          "summary": "Opened the dd-case side of PayOps backlog v1 deprecation work.",
-          "event_id": "evt_2026-06-03_github_ddcase_backlog_v1_pr12658",
-          "confidence": 0.78
-        },
-        {
-          "date": "2026-06-03",
-          "summary": "Merged the Samurai side of PayOps backlog v1 deprecation, keeping Routine backlog on the v2 path.",
-          "event_id": "evt_2026-06-03_github_samurai_backlog_v1",
-          "confidence": 0.78
-        },
-        {
-          "date": "2026-06-03",
-          "summary": "Merged the Routine case assignment and WFM status refactor plan documentation in Samurai.",
-          "event_id": "evt_2026-06-03_github_samurai_wfm_plan",
-          "confidence": 0.8
-        }
-      ],
-      "decisions": [],
-      "decisions_count": 0,
-      "followups": [
-        "2026-06-01: Confirm whether system alert cases should be excluded from catch-all queues. (fu_2026-06-01_config_queue_system_alert).",
-        "2026-06-02: Split or coordinate old-config removal work with Michelle. (fu_2026-06-02_config_queue_cleanup_split).",
-        "2026-06-02: Think through local/offline JEXL validation design for queue routing. (fu_2026-06-02_jexl_verifier)."
-      ],
-      "followups_count": 3,
-      "risks": [],
-      "risks_count": 0,
-      "role_counts": {
-        "reviewer": 1,
-        "core_contributor": 6
-      },
-      "recent_updates": [
-        {
-          "date": "2026-06-03",
-          "title": "[NO JIRA] docs: add case assignment WFM refactor plan",
-          "summary": "Merged the Routine case assignment and WFM status refactor plan documentation in Samurai.",
-          "action_type": "pull_request_merged",
-          "role": "core_contributor"
-        },
-        {
-          "date": "2026-06-03",
-          "title": "[POT-2391] chore: deprecate backlog v1",
-          "summary": "Merged the Samurai side of PayOps backlog v1 deprecation, keeping Routine backlog on the v2 path.",
-          "action_type": "pull_request_merged",
-          "role": "core_contributor"
-        },
-        {
-          "date": "2026-06-03",
-          "title": "[POT-2391] chore: deprecate PayOps backlog v1",
-          "summary": "Opened the dd-case side of PayOps backlog v1 deprecation work.",
-          "action_type": "pull_request_opened",
-          "role": "core_contributor"
-        },
-        {
-          "date": "2026-06-02",
-          "title": "System-alert case forwarding consultation",
-          "summary": "Asked whether system alert cases can be forwarded to other teams and who should be consulted.",
-          "action_type": "requirements_question",
-          "role": "unknown"
-        }
-      ],
-      "event_count": 8,
-      "daily_count": 3,
-      "latest_date": "2026-06-03"
-    },
-    {
       "id": "automating-ops-tasks",
       "name": "Automating Ops tasks",
       "status": "implementation",
@@ -1788,7 +2050,7 @@ window.WORK_TRACE_DATA = {
         "projects/active/automating-ops-tasks",
         "projects/active/automating-ops-tasks.yaml"
       ],
-      "timeline_count": 2,
+      "timeline_count": 3,
       "timeline": [
         {
           "date": "2026-06-02",
@@ -1801,23 +2063,39 @@ window.WORK_TRACE_DATA = {
           "summary": "Attended a sync about next steps for AI automation technology.",
           "event_id": "evt_2026-06-02_calendar_ai_automation_sync",
           "confidence": 0.78
+        },
+        {
+          "date": "2026-06-04",
+          "summary": "Continued automation-process planning around shadow mode, source-outcome comparison, safety gates, rollback behavior, and where the capability should live.",
+          "event_id": "evt_2026-06-04_slack_automation_process_planning",
+          "confidence": 0.88
         }
       ],
       "decisions": [],
       "decisions_count": 0,
       "followups": [
-        "2026-06-02: Clarify whether the team should invest in the automation framework direction. (fu_2026-06-02_automation_framework_decision)."
+        "2026-06-02: Clarify whether the team should invest in the automation framework direction. (fu_2026-06-02_automation_framework_decision).",
+        "2026-06-04: Evaluate where and how to implement automation shadow mode, comparison, safety gate, and rollback behavior. (fu_2026-06-04_automation_safety_process)."
       ],
-      "followups_count": 1,
+      "followups_count": 2,
       "risks": [
-        "2026-06-02: Framework scope and ownership remained unsettled based on Slack/planning discussion. (risk_2026-06-02_framework_ambiguity)."
+        "2026-06-02: Framework scope and ownership remained unsettled based on Slack/planning discussion. (risk_2026-06-02_framework_ambiguity).",
+        "2026-06-04: Automation-process ownership and implementation location remained unsettled. (risk_2026-06-04_automation_ownership)."
       ],
-      "risks_count": 1,
+      "risks_count": 2,
       "role_counts": {
-        "core_contributor": 1,
+        "core_contributor": 2,
+        "reviewer": 1,
         "observer": 1
       },
       "recent_updates": [
+        {
+          "date": "2026-06-04",
+          "title": "PayOps automation process planning",
+          "summary": "Continued automation-process planning around shadow mode, source-outcome comparison, safety gates, and rollback/safety-switch behavior.",
+          "action_type": "project_planning",
+          "role": "core_contributor"
+        },
         {
           "date": "2026-06-02",
           "title": "Sync Up on AI Automation Tech Next Step",
@@ -1827,22 +2105,22 @@ window.WORK_TRACE_DATA = {
         },
         {
           "date": "2026-06-02",
+          "title": "Add an introduction document for loss recovery process",
+          "summary": "Reviewed payops-process-orchestrator documentation PR activity for a loss-recovery process introduction.",
+          "action_type": "pull_request_reviewed",
+          "role": "reviewer"
+        },
+        {
+          "date": "2026-06-02",
           "title": "Zizheng / Amanda",
           "summary": "Attended a 1:1/sync with Amanda; project mapping is inferred from the same-day automation-framework discussion.",
           "action_type": "meeting_attended",
           "role": "unknown"
-        },
-        {
-          "date": "2026-06-02",
-          "title": "PayOps automation framework RFC shared",
-          "summary": "Shared the PayOps Automation Process Paradigm and Framework Capabilities RFC and discussed whether to pursue that framework direction.",
-          "action_type": "project_planning",
-          "role": "core_contributor"
         }
       ],
-      "event_count": 3,
-      "daily_count": 1,
-      "latest_date": "2026-06-02"
+      "event_count": 5,
+      "daily_count": 2,
+      "latest_date": "2026-06-04"
     },
     {
       "id": "webapp-ninjas-migration",
@@ -1873,12 +2151,18 @@ window.WORK_TRACE_DATA = {
         "projects/active/webapp-ninjas-migration",
         "projects/active/webapp-ninjas-migration.yaml"
       ],
-      "timeline_count": 1,
+      "timeline_count": 2,
       "timeline": [
         {
           "date": "2026-06-03",
           "summary": "Reviewed PR activity for tag read endpoints in the backoffice-annotation migration area.",
           "event_id": "evt_2026-06-03_github_review_backoffice_annotation_tags",
+          "confidence": 0.8
+        },
+        {
+          "date": "2026-06-02",
+          "summary": "Left review comments on the backoffice-annotation tag read endpoints implementation before the later approval on June 3.",
+          "event_id": "evt_2026-06-02_github_review_backoffice_annotation_tags_comments",
           "confidence": 0.8
         }
       ],
@@ -1889,13 +2173,20 @@ window.WORK_TRACE_DATA = {
       "risks": [],
       "risks_count": 0,
       "role_counts": {
-        "reviewer": 1
+        "reviewer": 2
       },
       "recent_updates": [
         {
           "date": "2026-06-03",
           "title": "POT-2455: Tag read endpoints implementation",
           "summary": "Reviewed PR activity for tag read endpoints in the backoffice-annotation migration area.",
+          "action_type": "pull_request_reviewed",
+          "role": "reviewer"
+        },
+        {
+          "date": "2026-06-02",
+          "title": "POT-2455: Tag read endpoints implementation",
+          "summary": "Left review comments on the backoffice-annotation tag read endpoints implementation before the later approval on June 3.",
           "action_type": "pull_request_reviewed",
           "role": "reviewer"
         },
@@ -1907,9 +2198,64 @@ window.WORK_TRACE_DATA = {
           "role": "unknown"
         }
       ],
-      "event_count": 2,
-      "daily_count": 1,
+      "event_count": 3,
+      "daily_count": 2,
       "latest_date": "2026-06-03"
+    },
+    {
+      "id": "manual-internal-transfers",
+      "name": "Manual Internal Transfers Tool",
+      "status": "post_release",
+      "priority": "P1",
+      "themes": [
+        "losses",
+        "operational_risk"
+      ],
+      "role": "Engineer",
+      "involvement_role": "core_contributor",
+      "role_confidence": "high",
+      "confidence": null,
+      "aliases": [
+        "adhoc tool",
+        "margin take out",
+        "MTO"
+      ],
+      "source_links": [
+        "https://docs.google.com/presentation/d/1VXagxcYLEAc5KUW8AkBNONRbXEHfLmwLJr8bbsUUIu4/edit",
+        "https://transferwise.atlassian.net/wiki/spaces/POT/pages/4058514360/Q2+26+Projects+Overview+-+PDI"
+      ],
+      "definition": "",
+      "current_status": "",
+      "lifecycle": "active",
+      "paths": [
+        "projects/active/manual-internal-transfers.yaml"
+      ],
+      "role_counts": {
+        "reviewer": 2
+      },
+      "recent_updates": [
+        {
+          "date": "2026-06-03",
+          "title": "[CPL-845] Allow manual link for onhold transactions in ninjas",
+          "summary": "Reviewed Ninjas2 PR activity for allowing manual linking of on-hold transactions.",
+          "action_type": "pull_request_reviewed",
+          "role": "reviewer"
+        },
+        {
+          "date": "2026-06-02",
+          "title": "[CPL-844] Allow on_hold transactions to be linked in manual linker",
+          "summary": "Reviewed manual-linker PR activity for allowing on-hold transactions to be linked.",
+          "action_type": "pull_request_reviewed",
+          "role": "reviewer"
+        }
+      ],
+      "event_count": 2,
+      "daily_count": 0,
+      "latest_date": "2026-06-03",
+      "timeline_count": 0,
+      "decisions_count": 0,
+      "followups_count": 0,
+      "risks_count": 0
     },
     {
       "id": "case-based-access",
@@ -2144,44 +2490,6 @@ window.WORK_TRACE_DATA = {
       "event_count": 1,
       "daily_count": 1,
       "latest_date": "2026-06-02"
-    },
-    {
-      "id": "manual-internal-transfers",
-      "name": "Manual Internal Transfers Tool",
-      "status": "post_release",
-      "priority": "P1",
-      "themes": [
-        "losses",
-        "operational_risk"
-      ],
-      "role": "Engineer",
-      "involvement_role": "core_contributor",
-      "role_confidence": "high",
-      "confidence": null,
-      "aliases": [
-        "adhoc tool",
-        "margin take out",
-        "MTO"
-      ],
-      "source_links": [
-        "https://docs.google.com/presentation/d/1VXagxcYLEAc5KUW8AkBNONRbXEHfLmwLJr8bbsUUIu4/edit",
-        "https://transferwise.atlassian.net/wiki/spaces/POT/pages/4058514360/Q2+26+Projects+Overview+-+PDI"
-      ],
-      "definition": "",
-      "current_status": "",
-      "lifecycle": "active",
-      "paths": [
-        "projects/active/manual-internal-transfers.yaml"
-      ],
-      "role_counts": {},
-      "recent_updates": [],
-      "event_count": 0,
-      "daily_count": 0,
-      "latest_date": null,
-      "timeline_count": 0,
-      "decisions_count": 0,
-      "followups_count": 0,
-      "risks_count": 0
     }
   ],
   "roles": [
@@ -2189,23 +2497,23 @@ window.WORK_TRACE_DATA = {
       "name": "core_contributor",
       "label": "Core contributor",
       "project_count": 8,
-      "event_count": 44,
+      "event_count": 53,
       "projects": [
         "support-and-on-call",
-        "cross-team-escalations-zd-ddcase",
         "configurable-queue",
+        "cross-team-escalations-zd-ddcase",
         "automating-ops-tasks",
+        "manual-internal-transfers",
         "case-based-access",
         "extra-money-payouts",
-        "work-memory",
-        "manual-internal-transfers"
+        "work-memory"
       ]
     },
     {
       "name": "side_helper",
       "label": "Side helper",
       "project_count": 2,
-      "event_count": 3,
+      "event_count": 4,
       "projects": [
         "webapp-ninjas-migration",
         "retry-volume-control"
@@ -2227,7 +2535,7 @@ window.WORK_TRACE_DATA = {
     },
     {
       "source": "github",
-      "event_count": 20,
+      "event_count": 28,
       "covered_true_count": 5,
       "covered_false_count": 0
     },
@@ -2275,7 +2583,7 @@ window.WORK_TRACE_DATA = {
     },
     {
       "source": "slack",
-      "event_count": 17,
+      "event_count": 20,
       "covered_true_count": 5,
       "covered_false_count": 0
     },
@@ -2291,7 +2599,7 @@ window.WORK_TRACE_DATA = {
       {
         "record_type": "weekly_summary",
         "week": "2026-W23",
-        "generated_at": "2026-06-05T13:24:23+03:00",
+        "generated_at": "2026-06-05T13:44:33+03:00",
         "source_daily_records": [
           "2026-06-01",
           "2026-06-02",
@@ -2301,13 +2609,13 @@ window.WORK_TRACE_DATA = {
         ],
         "confidence": 0.83,
         "projects_touched": {
-          "support-and-on-call": 18,
+          "support-and-on-call": 21,
           "cross-team-escalations-zd-ddcase": 10,
-          "configurable-queue": 7,
-          "automating-ops-tasks": 2,
+          "configurable-queue": 9,
+          "automating-ops-tasks": 3,
           "retry-volume-control": 1,
           "case-based-access": 1,
-          "webapp-ninjas-migration": 1,
+          "webapp-ninjas-migration": 2,
           "extra-money-payouts": 1,
           "work-memory": 1
         },
@@ -2315,8 +2623,8 @@ window.WORK_TRACE_DATA = {
           "support-and-on-call": {
             "owner": 1,
             "observer": 3,
-            "side_helper": 2,
-            "core_contributor": 12
+            "side_helper": 3,
+            "core_contributor": 14
           },
           "cross-team-escalations-zd-ddcase": {
             "core_contributor": 4,
@@ -2324,11 +2632,11 @@ window.WORK_TRACE_DATA = {
             "reviewer": 4
           },
           "configurable-queue": {
-            "reviewer": 1,
+            "reviewer": 3,
             "core_contributor": 6
           },
           "automating-ops-tasks": {
-            "core_contributor": 1,
+            "core_contributor": 2,
             "observer": 1
           },
           "retry-volume-control": {
@@ -2338,7 +2646,7 @@ window.WORK_TRACE_DATA = {
             "observer": 1
           },
           "webapp-ninjas-migration": {
-            "reviewer": 1
+            "reviewer": 2
           },
           "extra-money-payouts": {
             "core_contributor": 1
@@ -2353,6 +2661,7 @@ window.WORK_TRACE_DATA = {
           "Confirm whether contact-side event contract changes are needed before implementation.",
           "Confirm whether system alert cases should be excluded from catch-all queues.",
           "Consider removing unused old 7-day webapp config/dead code later.",
+          "Evaluate where and how to implement automation shadow mode, comparison, safety gate, and rollback behavior.",
           "Find the right owner/consultant for system alert case forwarding policy.",
           "Get feedback from transfer/public-transfer owners on internal account recipient ownership proposal.",
           "Get workflow-ui PR 2809 reviewed.",
@@ -2361,21 +2670,23 @@ window.WORK_TRACE_DATA = {
           "Update documentation to reflect 10-working-day auto-cancel behavior.",
           "Verify whether ZD custom fields can be fetched and mapped to transfer ID."
         ],
-        "unclassified_event_count": 5,
+        "unclassified_event_count": 9,
         "source_gaps": [
           "private_slack_dm_not_queried_by_default",
           "full_jira_changelog_not_fetched",
           "gmail_disabled_or_not_queried",
           "gdocs_body_not_queried",
+          "google_drive_metadata_only",
+          "meeting_notes_attachments_not_fetched_consent_gated",
           "2026-06-05_same_day_partial_record"
         ],
         "executive_summary": "Updated records for 2026-06-01 through 2026-06-05 show a week split across support/on-call delivery, configurable queue/routing cleanup, cross-team escalation/ZD sync, EMPOI architecture discussion, automation planning, and personal work-memory initiali",
         "main_outcomes": [
-          "Support/on-call: PDIOC-649, PDIOC-652, PDIOC-653, PDIOC-655, PDIOC-654, M2E auto-cancel, and PDI support closures advanced.",
-          "Configurable queue: old-config cleanup, catch-all/system-alert routing questions, JEXL validation thinking, backlog v1 deprecation, WFM planning, and catch-all alerting review moved forward.",
+          "Support/on-call: PDIOC-649, PDIOC-650, PDIOC-652, PDIOC-653, PDIOC-655, PDIOC-654, M2E auto-cancel, suspended-transfer-delay support, release follow-up, and PDI support closures advanced.",
+          "Configurable queue: old-config cleanup, catch-all/system-alert routing questions, JEXL validation thinking, backlog v1 deprecation, WFM planning, routing/payopsTeam reviews, and catch-all alerting review moved forward.",
           "Cross-team escalations: POT-2411 warning tracking landed; POT-2423 ZD sync reviews and custom-field/contract questions progressed.",
           "EMPOI: internal-account transfer and standard recipient-copy support were raised as architecture concerns.",
-          "Automation: PayOps automation framework and AI automation next steps received planning attention.",
+          "Automation: PayOps automation framework, AI automation next steps, and safety-gated automation-process planning received attention.",
           "Work memory: the local trace was initiali"
         ],
         "project_progress": [
@@ -2403,7 +2714,7 @@ window.WORK_TRACE_DATA = {
       {
         "record_type": "monthly_summary",
         "month": "2026-06",
-        "generated_at": "2026-06-05T13:24:23+03:00",
+        "generated_at": "2026-06-05T13:44:33+03:00",
         "source_weekly_records": [
           "2026-W23"
         ],
@@ -2416,13 +2727,13 @@ window.WORK_TRACE_DATA = {
         ],
         "confidence": 0.83,
         "projects_touched": {
-          "support-and-on-call": 18,
+          "support-and-on-call": 21,
           "cross-team-escalations-zd-ddcase": 10,
-          "configurable-queue": 7,
-          "automating-ops-tasks": 2,
+          "configurable-queue": 9,
+          "automating-ops-tasks": 3,
           "retry-volume-control": 1,
           "case-based-access": 1,
-          "webapp-ninjas-migration": 1,
+          "webapp-ninjas-migration": 2,
           "extra-money-payouts": 1,
           "work-memory": 1
         },
@@ -2430,8 +2741,8 @@ window.WORK_TRACE_DATA = {
           "support-and-on-call": {
             "owner": 1,
             "observer": 3,
-            "side_helper": 2,
-            "core_contributor": 12
+            "side_helper": 3,
+            "core_contributor": 14
           },
           "cross-team-escalations-zd-ddcase": {
             "core_contributor": 4,
@@ -2439,11 +2750,11 @@ window.WORK_TRACE_DATA = {
             "reviewer": 4
           },
           "configurable-queue": {
-            "reviewer": 1,
+            "reviewer": 3,
             "core_contributor": 6
           },
           "automating-ops-tasks": {
-            "core_contributor": 1,
+            "core_contributor": 2,
             "observer": 1
           },
           "retry-volume-control": {
@@ -2453,7 +2764,7 @@ window.WORK_TRACE_DATA = {
             "observer": 1
           },
           "webapp-ninjas-migration": {
-            "reviewer": 1
+            "reviewer": 2
           },
           "extra-money-payouts": {
             "core_contributor": 1
@@ -2466,7 +2777,9 @@ window.WORK_TRACE_DATA = {
         "source_gaps": [
           "missing_dates_2026-06-06_to_2026-06-30",
           "full_jira_changelog_not_fetched",
-          "private_slack_dm_not_queried_by_default"
+          "private_slack_dm_not_queried_by_default",
+          "google_drive_metadata_only",
+          "meeting_notes_attachments_not_fetched_consent_gated"
         ],
         "executive_summary": "June 2026 is only partially covered so far: this rollup uses records from 2026-06-01 through 2026-06-05 and weekly rollup 2026-W23. It should be treated as an early-month partial summary, not a complete month.",
         "main_outcomes": [],
@@ -2479,20 +2792,20 @@ window.WORK_TRACE_DATA = {
       {
         "record_type": "quarterly_summary",
         "quarter": "2026-Q2",
-        "generated_at": "2026-06-05T13:24:23+03:00",
+        "generated_at": "2026-06-05T13:44:33+03:00",
         "source_monthly_records": [
           "2026-06"
         ],
         "confidence": 0.83,
         "coverage": "partial_q2_from_2026-06-01_to_2026-06-05",
         "projects_touched": {
-          "support-and-on-call": 18,
+          "support-and-on-call": 21,
           "cross-team-escalations-zd-ddcase": 10,
-          "configurable-queue": 7,
-          "automating-ops-tasks": 2,
+          "configurable-queue": 9,
+          "automating-ops-tasks": 3,
           "retry-volume-control": 1,
           "case-based-access": 1,
-          "webapp-ninjas-migration": 1,
+          "webapp-ninjas-migration": 2,
           "extra-money-payouts": 1,
           "work-memory": 1
         },
@@ -2500,8 +2813,8 @@ window.WORK_TRACE_DATA = {
           "support-and-on-call": {
             "owner": 1,
             "observer": 3,
-            "side_helper": 2,
-            "core_contributor": 12
+            "side_helper": 3,
+            "core_contributor": 14
           },
           "cross-team-escalations-zd-ddcase": {
             "core_contributor": 4,
@@ -2509,11 +2822,11 @@ window.WORK_TRACE_DATA = {
             "reviewer": 4
           },
           "configurable-queue": {
-            "reviewer": 1,
+            "reviewer": 3,
             "core_contributor": 6
           },
           "automating-ops-tasks": {
-            "core_contributor": 1,
+            "core_contributor": 2,
             "observer": 1
           },
           "retry-volume-control": {
@@ -2523,7 +2836,7 @@ window.WORK_TRACE_DATA = {
             "observer": 1
           },
           "webapp-ninjas-migration": {
-            "reviewer": 1
+            "reviewer": 2
           },
           "extra-money-payouts": {
             "core_contributor": 1
@@ -2536,7 +2849,9 @@ window.WORK_TRACE_DATA = {
           "missing_q2_records_before_2026-06-01",
           "missing_june_dates_after_2026-06-05",
           "full_jira_changelog_not_fetched",
-          "private_slack_dm_not_queried_by_default"
+          "private_slack_dm_not_queried_by_default",
+          "google_drive_metadata_only",
+          "meeting_notes_attachments_not_fetched_consent_gated"
         ],
         "executive_summary": "",
         "main_outcomes": [],
@@ -2550,6 +2865,7 @@ window.WORK_TRACE_DATA = {
     "followups": [
       "Ask Contacts whether recipient-copy support can be standardized.",
       "Automating Ops tasks: 2026-06-02: Clarify whether the team should invest in the automation framework direction. (fu_2026-06-02_automation_framework_decision).",
+      "Automating Ops tasks: 2026-06-04: Evaluate where and how to implement automation shadow mode, comparison, safety gate, and rollback behavior. (fu_2026-06-04_automation_safety_process).",
       "Clarify whether the team should invest in the automation framework direction.",
       "Configurable queue: 2026-06-01: Confirm whether system alert cases should be excluded from catch-all queues. (fu_2026-06-01_config_queue_system_alert).",
       "Configurable queue: 2026-06-02: Split or coordinate old-config removal work with Michelle. (fu_2026-06-02_config_queue_cleanup_split).",
@@ -2559,6 +2875,7 @@ window.WORK_TRACE_DATA = {
       "Consider removing unused old 7-day webapp config/dead code later.",
       "Cross team escalation (ZD <> ddcase sync): 2026-06-04: Confirm whether contact-side event contract changes are needed before implementation. (fu_2026-06-04_contact_contract).",
       "Cross team escalation (ZD <> ddcase sync): 2026-06-04: Verify whether ZD custom fields can be fetched and mapped to transfer ID. (fu_2026-06-04_zd_custom_fields).",
+      "Evaluate where and how to implement automation shadow mode, comparison, safety gate, and rollback behavior.",
       "Extra Money Payouts: 2026-06-04: Ask Contacts whether recipient-copy support can be standardized. (fu_2026-06-04_standard_recipient_copy).",
       "Extra Money Payouts: 2026-06-04: Get feedback from transfer/public-transfer owners on internal account recipient ownership proposal. (fu_2026-06-04_empoi_internal_account).",
       "Find the right owner/consultant for system alert case forwarding policy.",
@@ -2574,6 +2891,8 @@ window.WORK_TRACE_DATA = {
     ],
     "risks": [
       "Automating Ops tasks: 2026-06-02: Framework scope and ownership remained unsettled based on Slack/planning discussion. (risk_2026-06-02_framework_ambiguity).",
+      "Automating Ops tasks: 2026-06-04: Automation-process ownership and implementation location remained unsettled. (risk_2026-06-04_automation_ownership).",
+      "Automation-process ownership and implementation location remained unsettled.",
       "Cross team escalation (ZD <> ddcase sync): 2026-06-04: Discussion suggested the work may need to wait for contact-side owner/manpower. (risk_2026-06-04_zd_sync_capacity).",
       "Discussion suggested the work may need to wait for contact-side owner/manpower.",
       "Extra Money Payouts: 2026-06-04: Recipient-copy edge cases have accumulated special logic and may keep increasing implementation complexity. (risk_2026-06-04_empoi_edge_cases).",
@@ -2585,12 +2904,16 @@ window.WORK_TRACE_DATA = {
       "full_jira_changelog_not_fetched",
       "gdocs_body_not_queried",
       "gmail_disabled_or_not_queried",
+      "google_drive_metadata_only",
       "manual_supplement_prompted_no_new_data",
+      "meeting_notes_attachments_not_fetched_consent_gated",
       "missing_dates_2026-06-06_to_2026-06-30",
       "missing_june_dates_after_2026-06-05",
       "missing_q2_records_before_2026-06-01",
+      "one_review_only_github_event_left_unclassified",
       "private_slack_dm_not_queried_by_default",
-      "same_day_partial_record"
+      "same_day_partial_record",
+      "some_review_only_github_events_left_unclassified"
     ]
   }
 };

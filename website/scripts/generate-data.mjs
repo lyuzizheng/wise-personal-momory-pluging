@@ -673,12 +673,16 @@ function firstProjectCandidateRoleReason(candidates) {
 
 function sanitizeUser(user) {
   const safe = {};
+  const identity = pickDefined(user, ["preferred_name", "full_name"]);
   const department = pickDefined(user?.department, ["category", "confidence"]);
   const role = pickDefined(user?.role, ["title", "team", "squad", "tribe", "company"]);
+  const managerOrLead = pickDefined(user?.manager_or_lead, ["name", "confidence"]);
   const timezone = pickDefined(user?.timezone, ["local"]);
 
+  if (Object.keys(identity).length) safe.identity = identity;
   if (Object.keys(department).length) safe.department = department;
   if (Object.keys(role).length) safe.role = role;
+  if (Object.keys(managerOrLead).length) safe.manager_or_lead = managerOrLead;
   if (Object.keys(timezone).length) safe.timezone = timezone;
 
   return safe;

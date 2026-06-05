@@ -1,6 +1,5 @@
 const data = window.WORK_TRACE_DATA || { trace: { exists: false }, stats: {}, projects: [], dailyRecords: [], events: [], rollups: {} };
 
-const palette = ["#2f5711", "#168a88", "#4267c2", "#b94878", "#9b6b12", "#5b6c24", "#7a4fb3", "#c4562f"];
 const state = {
   role: "all",
   status: "all",
@@ -10,7 +9,6 @@ const state = {
 };
 
 const byId = (id) => document.getElementById(id);
-const fmt = new Intl.NumberFormat("en");
 
 function init() {
   if (!data.trace?.exists) {
@@ -20,7 +18,6 @@ function init() {
 
   renderMeta();
   renderMetrics();
-  renderTimeline();
   setupFilters();
   renderProjects();
   renderEvents();
@@ -40,7 +37,9 @@ function byIdFromTemplate() {
 }
 
 function renderMeta() {
+  const user = data.trace?.user || {};
   byId("generatedMeta").textContent = `Generated ${formatDateTime(data.generated_at)} from ${data.trace.root || "personal-work-trace"}`;
+  byId("identitySummary").textContent = identityLine(user);
   const range = data.trace.date_range;
   byId("traceRange").textContent = range?.start
     ? `${range.start} to ${range.end}. ${data.trace.initialized ? "Initialized trace store." : "Trace store detected without initialization metadata."}`
@@ -71,29 +70,17 @@ function renderMetrics() {
   `).join("");
 }
 
-function renderTimeline() {
-  const records = [...(data.dailyRecords || [])].sort((a, b) => a.date.localeCompare(b.date));
-  const max = Math.max(1, ...records.map((record) => record.event_count || 0));
-  const projectIndex = new Map((data.projects || []).map((project, index) => [project.id, index]));
-
-  byId("timeline").innerHTML = records.map((record) => {
-    const touched = Object.entries(record.projects_touched || {});
-    const segments = touched.length
-      ? touched.map(([projectId, count]) => {
-          const width = Math.max(4, (count / Math.max(1, record.event_count || count)) * 100);
-          const color = palette[(projectIndex.get(projectId) ?? 0) % palette.length];
-          return `<span class="bar-segment" title="${escapeAttr(projectId)}: ${count}" style="width:${width}%;background:${color}"></span>`;
-        }).join("")
-      : `<span class="bar-segment" style="width:${Math.max(4, ((record.event_count || 0) / max) * 100)}%;background:#d7ded0"></span>`;
-
-    return `
-      <div class="timeline-row">
-        <div class="timeline-date">${escapeHtml(record.date)}</div>
-        <div class="bar">${segments}</div>
-        <div class="timeline-count">${fmt.format(record.event_count || 0)} events</div>
-      </div>
-    `;
-  }).join("") || `<p class="muted">No daily records found.</p>`;
+function identityLine(user) {
+  const name = user.identity?.full_name || user.identity?.preferred_name || "Identity not captured";
+  const title = user.role?.title;
+  const department = user.department?.category;
+  const orgPath = [user.role?.team, user.role?.squad, user.role?.tribe].filter(Boolean).join(" / ");
+  const timezone = user.timezone?.local || "";
+  return [
+    [name, title, department].filter(Boolean).join(" · "),
+    orgPath,
+    timezone
+  ].filter(Boolean).join(" | ");
 }
 
 function setupFilters() {
@@ -145,9 +132,9 @@ function renderProjects() {
           <h3>${escapeHtml(project.name || project.id)}</h3>
           <p>${escapeHtml(project.definition || project.current_status || project.id)}</p>
         </div>
-        <span class="pill pill--green pill--priority">${escapeHtml(project.priority || "tracked")}</span>
       </div>
       <div class="pill-row">
+        <span class="pill pill--priority">${escapeHtml(project.priority || "tracked")}</span>
         <span class="pill">${escapeHtml(project.status || "unknown")}</span>
         <span class="pill ${rolePillClass(project.involvement_role)}">${escapeHtml(roleLabel(project.involvement_role))}</span>
         ${project.role && project.role !== "Unspecified role" ? `<span class="pill pill--blue">${escapeHtml(project.role)}</span>` : ""}
