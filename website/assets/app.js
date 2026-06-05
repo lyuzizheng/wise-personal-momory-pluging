@@ -145,7 +145,7 @@ function renderProjects() {
           <h3>${escapeHtml(project.name || project.id)}</h3>
           <p>${escapeHtml(project.definition || project.current_status || project.id)}</p>
         </div>
-        <span class="pill pill--green">${escapeHtml(project.priority || "tracked")}</span>
+        <span class="pill pill--green pill--priority">${escapeHtml(project.priority || "tracked")}</span>
       </div>
       <div class="pill-row">
         <span class="pill">${escapeHtml(project.status || "unknown")}</span>
