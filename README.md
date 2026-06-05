@@ -69,6 +69,8 @@ git config core.hooksPath .githooks
 
 - Use available connectors first: Slack, Jira, GitHub, Confluence, Google, Figma/FigJam, and other MCPs.
 - If Google/Jira/Confluence/Figma connectors are unavailable, use Slack signals where possible: bot posts, channel membership, daily channels, on-call channels, and `@` mentions.
+- For analysts and query-heavy roles, use DataGrip/local SQL files only through sanitized query-work analysis by subagent.
+- Never store query results, credentials, connection strings, raw sensitive SQL, customer identifiers, or PII.
 - Bot messages are evidence pointers, not final truth. Keep confidence lower and ask when ambiguous.
 - If available sources are too thin, ask the user to add connectors or provide manual seed data.
 - For large Slack/wiki/backfill context, use subagents when the current agent supports them.

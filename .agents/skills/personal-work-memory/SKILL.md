@@ -49,6 +49,7 @@ Examples:
 - Codex with GitHub, Slack, Google Drive, Gmail, Google Calendar, or Atlassian plugins: use those plugin skills/tools for source reads.
 - Claude Code with matching MCP servers: use those MCP tools.
 - Figma/FigJam/design MCPs: use them for design, product, prototype, and design-system evidence when available.
+- DataGrip/local SQL files: use them only through sanitized query-work analysis; never store query results, credentials, connection strings, or PII.
 - Plain local agent: operate on local JSONL, Markdown, and manually supplied evidence only.
 
 All source-specific instructions in this skill are conditional. They apply only when that source is enabled in config and available in the current agent runtime.
@@ -674,6 +675,7 @@ Supported source agents, used only when the current runtime has a matching skill
 - Gmail Agent.
 - Google Docs Agent.
 - Figma / Design MCP Agent.
+- DataGrip / Query Work Agent.
 - Other Available MCP Agent.
 - Manual Notes Agent.
 
@@ -684,12 +686,15 @@ If a source has no available runtime capability, try indirect Slack and MCP evid
 - Confluence bots can indicate page edits or linked wiki pages.
 - GitHub bots can indicate PRs, reviews, merges, and deployments.
 - Figma bots can indicate file comments, design review, or prototype activity.
+- DataGrip query files and safe local SQL metadata can indicate analysis work for analyst, data, finance, risk, compliance, and product roles.
 - On-call bots and incident channels can indicate on-call duty, incident response, escalation, and handoff work.
 - Daily/standup channels can indicate active team context and current priorities.
 
 Record indirect evidence as lower confidence unless a source link or explicit assignment confirms it. If external sources are too sparse after this fallback, ask the user to add more connectors or provide manual daily data.
 
-For large context windows or broad backfills, use subagents when the platform supports them. Split by source or task, such as Slack signals, delivery sources, design sources, wiki/planning docs, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
+For large context windows or broad backfills, use subagents when the platform supports them. Split by source or task, such as Slack signals, delivery sources, design sources, query work, wiki/planning docs, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
+
+For query work, require a query-work subagent when there is more than a single obvious query file. The subagent must sanitize query intent and map it to candidate projects without storing raw SQL, query results, credentials, connection strings, hostnames, tokens, customer identifiers, or PII.
 
 ### 7.3 Project Association Agent
 

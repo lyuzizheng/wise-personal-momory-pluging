@@ -53,8 +53,9 @@ Use only capabilities available to the current agent:
 4. For Confluence team spaces, try to find the team home/wiki space first, then inspect fresh team member intro pages and personal onboarding docs for role, team, project, and ritual context.
 5. For Confluence team spaces, ignore pages that were last updated more than 24 months before the init date unless the user explicitly names the page or asks to include stale history.
 6. If Figma, FigJam, design-system, or other MCP connectors are available, use them as lightweight project/design evidence when relevant.
-7. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
-8. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
+7. If DataGrip project files, query scratch files, or safe local SQL history are available, use them as lightweight analysis-work evidence through a query-analysis subagent.
+8. If Jira, GitHub, or other delivery connectors are available, use them only for lightweight project/repo mapping, not deep backfill.
+9. If a connector is unavailable, look for indirect Slack signals from bots and channels before asking the user for the missing seed data.
 
 Do not request plugin installation unless the user specifically asks for live connector-backed initialization.
 
@@ -79,6 +80,7 @@ When init context is large, split analysis into subagents if the current platfor
 - Slack channel analyst: summarize channel membership, bot signals, and `@` mentions.
 - Wiki/planner analyst: inspect fresh Confluence or local planning docs and ignore stale pages.
 - Delivery-source analyst: inspect GitHub/Jira/Figma or other MCP evidence when available.
+- Query-work analyst: inspect safe DataGrip query files/history and map analysis intent to projects without storing raw SQL, credentials, connection details, query results, or PII.
 - Privacy/source-map analyst: identify gaps, unavailable connectors, and sources that should stay excluded.
 
 Each subagent must return concise evidence pointers, candidate projects/departments, confidence, and gaps. Do not ask subagents to write final trace files directly unless the platform explicitly supports safe file coordination.
@@ -92,6 +94,26 @@ After source discovery, decide whether evidence is enough:
 - If evidence is too thin to initialize useful memory, prompt the user to add more connectors or provide manual seed data.
 
 Ask for connectors only after explaining what is missing, for example Jira project mapping, Google Calendar recurring meetings, Figma design context, or Confluence team docs.
+
+## DataGrip And Query Work
+
+For analysts, data, finance, risk, compliance, product, and other query-heavy roles, DataGrip or local SQL work can indicate project activity.
+
+Allowed:
+
+- Query file names, paths, timestamps, and project folders.
+- Sanitized query intent, such as "analysed card dispute volume by week".
+- Referenced Jira/project labels in comments or filenames after redaction.
+- Warehouse/schema/table names only when they are not sensitive and help identify the project.
+
+Never store:
+
+- Query results.
+- Customer identifiers, emails, names, account IDs, transfer IDs, or other PII.
+- Credentials, connection strings, hostnames, tokens, database usernames, or secrets.
+- Raw SQL if it contains PII, sensitive filters, customer identifiers, or privileged business logic.
+
+Use a query-work subagent when query context is non-trivial. The subagent should return only sanitized events with evidence pointers, candidate projects, confidence, and privacy notes.
 
 ## Department Scope
 

@@ -11,6 +11,7 @@
 - Added init discovery for Confluence team wiki/home spaces, team member intro pages, and personal onboarding docs.
 - Added Slack fallback discovery using profile data, channel membership, bot messages, on-call/daily channels, and `@` mentions.
 - Added support guidance for Figma, FigJam, design, and other available MCP connectors.
+- Added DataGrip/local SQL query-work support for analysts and query-heavy roles, with subagent analysis and strict no-PII/no-credential handling.
 - Added subagent guidance for large initialization/backfill contexts.
 - Added local trace skill snapshot policy via `personal-work-trace/state/skill_snapshot.json` and `personal-work-trace/logs/skill-update-log.md`.
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.
