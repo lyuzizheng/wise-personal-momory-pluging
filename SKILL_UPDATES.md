@@ -20,3 +20,4 @@
 - Added local trace skill snapshot policy via `personal-work-trace/state/skill_snapshot.json` and `personal-work-trace/logs/skill-update-log.md`.
 - Added project-local discovery mirrors under `.agents/skills/` for Codex and `.claude/skills/` for Claude Code.
 - Added `SKILL_SYNC_CONTRACT.md` and `.githooks/pre-commit` so commits keep generated skill mirrors current.
+- Tightened `personal-work-memory` so maintenance runs are step-based, use subagents when available, and always refresh or explicitly skip affected weekly/monthly/quarterly rollups after daily/project writes.

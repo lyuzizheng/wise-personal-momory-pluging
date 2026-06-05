@@ -54,6 +54,27 @@ Examples:
 
 All source-specific instructions in this skill are conditional. They apply only when that source is enabled in config and available in the current agent runtime.
 
+## 0.1 Mandatory Run Contract
+
+Treat this skill as a step-based workflow. A work-memory run is not complete until the coordinator has executed or explicitly skipped each phase below with a recorded reason:
+
+1. **Skill/state check:** compare current skill snapshot with `personal-work-trace/state/skill_snapshot.json`.
+2. **Date plan:** resolve exact target dates and affected rollup periods in the user's timezone.
+3. **Manual supplement prompt:** ask for temporary daily data before source synthesis.
+4. **Subagent plan:** decide which source, association, synthesis, rollup, and quality agents are needed.
+5. **Source collection:** collect or import evidence for each target date.
+6. **Normalization and privacy:** normalize events, dedupe, and redact unsafe content.
+7. **Project and role association:** classify project and user involvement role for every event.
+8. **Daily write:** write events, daily markdown, and daily summary JSON for each target date.
+9. **Project write:** update touched project timelines, evidence, decisions, follow-ups, risks, and indexes.
+10. **Rollup write:** refresh every affected weekly rollup; then refresh affected monthly and quarterly rollups when requested, when boundary periods are reached, or when their lower-level inputs changed.
+11. **Quality check:** verify evidence, privacy, project-role confidence, idempotency, and rollup coverage.
+12. **Run log and user summary:** write `logs/YYYY-MM-DD.run.md` and report files updated, skipped phases, gaps, and review items.
+
+If the platform supports subagents, use them for source collection, project association, rollup generation, and quality review whenever the run covers more than one source, more than one date, a broad Slack/wiki context, query-work analysis, or any backfill/rollup request. If subagents are not available, perform the same phases sequentially and say so in the run log.
+
+Never stop after answering from local history when the user asked to maintain or update the work trace. Maintenance runs must write daily/project/rollup outputs or record why no write was possible.
+
 ## 2. Non-goals
 
 This system must not:
@@ -657,17 +678,20 @@ The system uses a coordinator agent and specialized sub-agents.
 
 Responsibilities:
 
-1. Determine date range.
-2. Load config and previous state.
-3. Spawn source agents for sources that are both enabled and available.
-4. Validate normalized events.
-5. Dedupe events.
-6. Run project association.
-7. Generate daily record.
-8. Update project records.
-9. Update weekly/monthly/quarterly records when needed.
-10. Write run log.
-11. Produce review summary for the user.
+1. Determine exact target dates and affected weekly/monthly/quarterly periods.
+2. Load config, previous state, project definitions, existing daily records, existing rollups, and the skill snapshot.
+3. Build a run checklist from `0.1 Mandatory Run Contract`.
+4. Spawn source agents for sources that are both enabled and available.
+5. Spawn project association, rollup, and quality agents when the current runtime supports subagents.
+6. Validate normalized events.
+7. Dedupe events.
+8. Run project and project-role association.
+9. Generate or update daily records for every target date.
+10. Update project timelines and indexes for every touched project.
+11. Always evaluate rollups for every affected period and write/update the required rollup files.
+12. Run quality/privacy checks after daily, project, and rollup writes.
+13. Write run log with completed/skipped phases.
+14. Produce review summary for the user.
 
 ### 7.2 Source Agents
 
@@ -701,7 +725,23 @@ If a source has no available runtime capability, try indirect Slack and MCP evid
 
 Record indirect evidence as lower confidence unless a source link or explicit assignment confirms it. If external sources are too sparse after this fallback, ask the user to add more connectors or provide manual daily data.
 
-For large context windows or broad backfills, use subagents when the platform supports them. Split by source or task, such as Slack signals, delivery sources, design sources, query work, wiki/planning docs, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
+For large context windows, broad backfills, or any rollup repair, use subagents when the platform supports them. Split by source or task, such as Slack signals, delivery sources, design sources, query work, wiki/planning docs, project association, rollup synthesis, and privacy/source coverage. Subagents should return concise normalized findings and evidence pointers, not broad prose dumps.
+
+Required subagent output shape:
+
+```json
+{
+  "agent": "slack_trace_agent",
+  "date_range": ["YYYY-MM-DD"],
+  "events": [],
+  "source_gaps": [],
+  "privacy_redactions": [],
+  "project_role_notes": [],
+  "files_or_records_read": []
+}
+```
+
+The coordinator must merge subagent outputs, dedupe them, and write canonical files. Subagents may recommend writes, but the coordinator owns final file writes unless the user explicitly asks for a delegated implementation run.
 
 For query work, require a query-work subagent when there is more than a single obvious query file. The subagent must sanitize query intent and map it to candidate projects without storing raw SQL, query results, credentials, connection strings, hostnames, tokens, customer identifiers, or PII.
 
@@ -735,6 +775,10 @@ Responsibilities:
 3. Generate quarterly records from monthly/project records.
 4. Update project timelines and indexes.
 5. Avoid re-reading raw traces unless repairing or backfilling.
+6. Run after daily and project updates for every affected target date.
+7. List missing lower-level records explicitly instead of blocking rollup generation.
+8. Separate owner/core contributor outcomes from reviewer, side-helper, observer, and unknown-role activity.
+9. Return a rollup coverage report with files read, files written, missing dates, confidence changes, and carry-over follow-ups.
 
 ### 7.6 Quality Agent
 
@@ -783,35 +827,58 @@ Input:
 
 Algorithm:
 
-1. Resolve date window:
-   - start = YYYY-MM-DDT00:00:00 in user timezone;
-   - end = next day T00:00:00.
-2. Load config.
-3. Prompt for temporary daily data and stage any manual supplement.
-4. Fetch traces from all enabled and available sources.
-5. Store raw traces in inbox/imports/YYYY-MM-DD/*.jsonl.
-6. Normalize traces into event objects.
-7. Validate event schema.
-8. Dedupe using dedupe_key and source_object_id.
-9. Redact or skip unsafe content.
-10. Classify each event into project candidates.
-11. Select project if confidence >= auto_assign_project threshold.
-12. Leave event unclassified if confidence is low.
-13. Write events/YYYY/MM/YYYY-MM-DD.events.jsonl.
-14. Generate daily/YYYY/MM/YYYY-MM-DD.md.
-15. Generate daily/YYYY/MM/YYYY-MM-DD.summary.json.
-16. Update each touched project:
-    - append timeline.jsonl;
-    - update daily-index.md;
-    - update decisions.md;
-    - update followups.md;
-    - update risks.md.
-17. If end of week, update weekly record.
-18. If end of month, update monthly record.
-19. If end of quarter, update quarterly record.
-20. Update state files.
-21. Write logs/YYYY-MM-DD.run.md.
-22. Return review summary to user.
+1. **Plan phase**
+   - Resolve each target date to `YYYY-MM-DDT00:00:00` through next day `T00:00:00` in the user timezone.
+   - Compute affected ISO weeks, months, quarters, and touched project ids from existing records plus new target dates.
+   - Load config, previous state, existing records, project definitions, current rollups, and skill snapshot.
+   - Create a checklist matching `0.1 Mandatory Run Contract`.
+2. **Manual supplement phase**
+   - Prompt for temporary daily data for each target date.
+   - If provided, stage it under `personal-work-trace/inbox/manual/YYYY-MM-DD.md`.
+   - If not provided, record `manual_supplement_not_provided` in source coverage.
+3. **Subagent/source phase**
+   - If subagents are available, spawn source subagents in parallel by source or date.
+   - If subagents are unavailable, run the same source collection sequentially.
+   - Store raw traces in `inbox/imports/YYYY-MM-DD/*.jsonl`.
+   - Every source or subagent must return events, source gaps, privacy redactions, and files/source objects read.
+4. **Normalize/privacy phase**
+   - Normalize traces into event objects.
+   - Validate event schema.
+   - Dedupe using `dedupe_key` and source object ids.
+   - Redact or skip unsafe content.
+5. **Project association phase**
+   - Use deterministic mapping first, semantic classification second.
+   - Classify both `selected_project_id` and `selected_project_role`.
+   - Select project only when confidence meets threshold.
+   - Keep low-confidence project or role assignments unclassified or `unknown`.
+6. **Daily write phase**
+   - Write `events/YYYY/MM/YYYY-MM-DD.events.jsonl`.
+   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.md`.
+   - Generate or update `daily/YYYY/MM/YYYY-MM-DD.summary.json`.
+   - Re-runs must preserve stable event ids where possible and log what changed.
+7. **Project write phase**
+   - For every touched project, append/update:
+     - `timeline.jsonl`;
+     - `evidence.jsonl`;
+     - `daily-index.md`;
+     - `decisions.md`;
+     - `followups.md`;
+     - `risks.md`.
+   - Append role-reclassification events when the project role changed.
+8. **Mandatory rollup phase**
+   - Refresh every affected weekly rollup after daily and project writes.
+   - Refresh affected monthly rollups if any weekly input in that month changed, if the user requested a month/backfill, or if the month is complete.
+   - Refresh affected quarterly rollups if any monthly/project input in that quarter changed, if the user requested a quarter/backfill, or if the quarter is complete.
+   - Rollups must use lower-level records first. Use raw traces only for repair/backfill and record that exception.
+   - Rollups must list missing dates or missing lower-level records under `Source Coverage and Gaps`.
+9. **Quality phase**
+   - Run quality/privacy review over events, daily records, project files, and rollups.
+   - Fix blocking quality issues before finishing.
+   - Record non-blocking issues in the run log and user summary.
+10. **State/log phase**
+   - Update `state/last_run.json`, cursors, dedupe index, project index, and skill snapshot.
+   - Write `logs/YYYY-MM-DD.run.md` with checklist status, files read, files written, subagents used, skipped phases, source gaps, and rollup coverage.
+   - Return review summary to user.
 
 ---
 
@@ -820,6 +887,8 @@ Algorithm:
 Weekly records are generated from daily records and project timelines.
 
 Weekly rollups do not require all seven daily records to exist. Use the daily records and event files available for that ISO week, list missing dates under `Source Coverage and Gaps`, and keep confidence lower when coverage is incomplete.
+
+Trigger weekly rollup generation after every daily/backfill run that touches a date in the week. Do not wait for Sunday/Monday boundaries if the user is preparing, repairing, or updating records.
 
 Weekly file path:
 
@@ -877,6 +946,21 @@ Rules:
 - Do not invent outcomes.
 - Keep unresolved follow-ups visible.
 - Link back to daily records and event ids.
+- Separate `owner` and `core_contributor` work from `reviewer`, `side_helper`, `observer`, and `unknown` activity.
+- Include `source_daily_records` and a missing-date list even when records are non-sequential.
+- If the weekly file already exists, update it idempotently from current daily/project records and record changed inputs.
+- If no daily records exist for the week, do not synthesize the week from memory alone; record the coverage gap and ask for source/manual evidence.
+
+Weekly rollup steps:
+
+1. Resolve the ISO week and dates in the user timezone.
+2. Read all available `daily/YYYY/MM/*.md`, `daily/**/*.summary.json`, and `events/**/*.events.jsonl` for those dates.
+3. Read touched project timelines and project indexes.
+4. Group outcomes by project and involvement role.
+5. Carry forward open follow-ups, risks, and unresolved questions.
+6. Write/update `weekly/YYYY/YYYY-Www.md`.
+7. Write/update `weekly/YYYY/YYYY-Www.summary.json`.
+8. Return a rollup coverage report to the coordinator.
 
 ---
 
@@ -885,6 +969,8 @@ Rules:
 Monthly records are generated from weekly records and project records.
 
 Monthly rollups do not require every week or every day to be present. Use available weekly records, daily records, and project timelines for the requested month. Record missing date ranges explicitly.
+
+Trigger monthly rollup generation when a weekly record in the month changed, when the user asked for a month/backfill, or when the month is complete. If weekly records are missing but daily records exist, use the daily records as fallback and list the missing weekly records.
 
 Monthly file path:
 
@@ -905,6 +991,15 @@ Monthly sections:
 9. Goals alignment.
 10. Evidence index.
 
+Monthly rollup steps:
+
+1. Read weekly rollups for the month.
+2. Read daily/project records only for missing or repaired weekly inputs.
+3. Group owner/core outcomes separately from supporting involvement.
+4. Preserve open follow-ups and risks.
+5. Write/update `monthly/YYYY/YYYY-MM.md` and `.summary.json`.
+6. Report missing weeks/dates and confidence impact.
+
 ---
 
 ## 11. Quarterly Workflow
@@ -912,6 +1007,8 @@ Monthly sections:
 Quarterly records are generated from monthly records, project records, and declared quarterly goals.
 
 Quarterly rollups do not require continuous monthly coverage. Use available records in scope and mark gaps clearly.
+
+Trigger quarterly rollup generation when a monthly record or project record in the quarter changed, when the user asked for a quarter/backfill, or when the quarter is complete. If monthly records are missing but weekly/daily records exist, use them as fallback and record the gap.
 
 Quarterly file path:
 
@@ -931,6 +1028,15 @@ Quarterly sections:
 8. Lessons learned.
 9. Next quarter carry-over.
 10. Appendix: evidence and links.
+
+Quarterly rollup steps:
+
+1. Read declared quarterly goals, monthly records, and project records.
+2. Use weekly/daily records only for missing or repaired monthly inputs.
+3. Summarize portfolio outcomes by project and involvement role.
+4. Separate shipped/core work from support/background visibility.
+5. Write/update `quarterly/YYYY/YYYY-Qn.md` and `.summary.json`.
+6. Report missing months/weeks/dates and confidence impact.
 
 ---
 
@@ -1357,9 +1463,9 @@ Tasks:
 5. Classify events into projects.
 6. Generate or update the daily record.
 7. Update touched project records.
-8. Update weekly/monthly/quarterly rollups if applicable.
-9. Run quality checks.
-10. Produce a concise review summary.
+8. Update every affected weekly/monthly/quarterly rollup or record an explicit skip reason.
+9. Run quality checks across daily, project, and rollup outputs.
+10. Produce a concise review summary with checklist status and rollup coverage.
 
 Hard rules:
 - Do not invent work.
@@ -1605,13 +1711,13 @@ Suggested jobs:
 
 1. Daily private draft:
    - every weekday morning for previous day;
-   - writes daily record and updates project files.
+   - writes daily record, updates project files, and refreshes affected rollups.
 2. Weekly rollup:
-   - Monday morning for previous ISO week.
+   - Monday morning for previous ISO week as a repair/review pass.
 3. Monthly rollup:
-   - first working day of month for previous month.
+   - first working day of month for previous month as a repair/review pass.
 4. Quarterly rollup:
-   - first working day after quarter end.
+   - first working day after quarter end as a repair/review pass.
 5. Backfill/repair:
    - manual only.
 
@@ -1642,17 +1748,35 @@ Date: YYYY-MM-DD
 
 - PROJECT-ID: N events, confidence avg 0.00
 
+## Rollups updated
+
+- Weekly: weekly/YYYY/YYYY-Www.md, confidence 0.00, missing dates: [...]
+- Monthly: monthly/YYYY/YYYY-MM.md or skipped: reason
+- Quarterly: quarterly/YYYY/YYYY-Qn.md or skipped: reason
+
+## Subagents / phases
+
+- Source collection: subagents used / sequential fallback
+- Project association: subagent used / sequential fallback
+- Rollup: subagent used / sequential fallback
+- Quality: pass/fail
+
 ## Needs review
 
 - N unclassified events
 - N low-confidence project assignments
 - N privacy redactions
+- N rollup coverage gaps
 
 ## Files updated
 
 - daily/...
 - events/...
 - projects/...
+- weekly/...
+- monthly/... or skipped
+- quarterly/... or skipped
+- logs/...
 ```
 
 ---
