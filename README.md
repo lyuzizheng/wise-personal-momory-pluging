@@ -27,6 +27,25 @@ Ask an agent to use:
 
 The skill should use whichever source plugins, MCP connectors, app connectors, local files, or manual notes are available in the current agent runtime.
 
+## Work Trace Website
+
+The `website/` folder contains a static visualisation of the local `personal-work-trace/` store.
+
+After generating or updating daily records, refresh the website data:
+
+```bash
+node website/scripts/generate-data.mjs
+```
+
+Then open `website/index.html` in a browser. If you prefer serving it over HTTP:
+
+```bash
+cd website
+python3 -m http.server 4173
+```
+
+Open `http://localhost:4173/`. The refresh command updates only `website/data/work-trace.js`; it does not regenerate the website code.
+
 When starting a new Claude Code or Codex chat inside this folder, the skills should be discoverable from the project-local mirrors:
 
 - Codex: `.agents/skills/`

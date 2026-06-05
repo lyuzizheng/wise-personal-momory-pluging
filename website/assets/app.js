@@ -53,7 +53,7 @@ function renderMetrics() {
     ["Daily records", stats.daily_record_count || 0, "Markdown and summary JSON"],
     ["Events", stats.event_count || 0, "Normalized JSONL traces"],
     ["Projects", stats.project_count || 0, "Active and archived patterns"],
-    ["Roles", stats.role_count || 0, "Project role labels"],
+    ["Roles", stats.role_count || 0, "Involvement buckets"],
     ["Source gaps", stats.source_gap_count || 0, "Coverage notes"]
   ];
 
@@ -92,7 +92,7 @@ function renderTimeline() {
 }
 
 function setupFilters() {
-  fillSelect("roleFilter", ["all", ...(data.roles || []).map((role) => role.name)], "All roles");
+  fillSelect("roleFilter", ["all", ...(data.roles || []).map((role) => ({ value: role.name, label: role.label || roleLabel(role.name) }))], "All roles");
   fillSelect("statusFilter", ["all", ...unique(data.projects.map((project) => project.status).filter(Boolean))], "All statuses");
   fillSelect("projectFilter", ["all", ...data.projects.map((project) => project.id)], "All projects");
   fillSelect("sourceFilter", ["all", ...unique(data.events.map((event) => event.source).filter(Boolean))], "All sources");
@@ -121,14 +121,15 @@ function setupFilters() {
 
 function fillSelect(id, values, allLabel) {
   byId(id).innerHTML = values.map((value, index) => {
-    const label = index === 0 && value === "all" ? allLabel : value;
-    return `<option value="${escapeAttr(value)}">${escapeHtml(label)}</option>`;
+    const optionValue = typeof value === "object" ? value.value : value;
+    const label = index === 0 && optionValue === "all" ? allLabel : (typeof value === "object" ? value.label : value);
+    return `<option value="${escapeAttr(optionValue)}">${escapeHtml(label)}</option>`;
   }).join("");
 }
 
 function renderProjects() {
   const projects = data.projects
-    .filter((project) => state.role === "all" || project.role === state.role)
+    .filter((project) => state.role === "all" || normalizeRole(project.involvement_role || project.role) === state.role)
     .filter((project) => state.status === "all" || project.status === state.status)
     .sort((a, b) => (b.event_count - a.event_count) || a.name.localeCompare(b.name));
 
@@ -143,7 +144,8 @@ function renderProjects() {
       </div>
       <div class="pill-row">
         <span class="pill">${escapeHtml(project.status || "unknown")}</span>
-        <span class="pill pill--blue">${escapeHtml(project.role || "Unspecified role")}</span>
+        <span class="pill ${rolePillClass(project.involvement_role)}">${escapeHtml(roleLabel(project.involvement_role))}</span>
+        ${project.role && project.role !== "Unspecified role" ? `<span class="pill pill--blue">${escapeHtml(project.role)}</span>` : ""}
         ${project.role_confidence ? `<span class="pill pill--rose">${escapeHtml(project.role_confidence)} role confidence</span>` : ""}
       </div>
       <div class="mini-stats">
@@ -167,7 +169,7 @@ function renderEvents() {
   const events = data.events
     .filter((event) => state.project === "all" || event.project_id === state.project)
     .filter((event) => state.source === "all" || event.source === state.source)
-    .filter((event) => !search || [event.title, event.summary, event.action_type, event.project_id].some((value) => String(value || "").toLowerCase().includes(search)))
+    .filter((event) => !search || [event.title, event.summary, event.action_type, event.project_id, event.project_role, roleLabel(event.project_role)].some((value) => String(value || "").toLowerCase().includes(search)))
     .sort((a, b) => String(b.timestamp || b.date).localeCompare(String(a.timestamp || a.date)))
     .slice(0, 120);
 
@@ -179,6 +181,7 @@ function renderEvents() {
         <p>${escapeHtml(event.summary || "No summary captured.")}</p>
         <div class="pill-row">
           <span class="pill pill--green">${escapeHtml(event.project_id || "unclassified")}</span>
+          ${event.project_role && event.project_role !== "unknown" ? `<span class="pill ${rolePillClass(event.project_role)}">${escapeHtml(roleLabel(event.project_role))}</span>` : ""}
           <span class="pill">${escapeHtml(event.action_type || "event")}</span>
         </div>
       </div>
@@ -242,6 +245,31 @@ function timeOnly(value) {
   if (!value) return "";
   const match = String(value).match(/T(\d{2}:\d{2})/);
   return match ? match[1] : "";
+}
+
+function normalizeRole(value) {
+  return String(value || "unknown").trim() || "unknown";
+}
+
+function roleLabel(role) {
+  return {
+    owner: "Owner",
+    core_contributor: "Core contributor",
+    reviewer: "Reviewer",
+    side_helper: "Side helper",
+    observer: "Observer",
+    unknown: "Unknown"
+  }[normalizeRole(role)] || "Unknown";
+}
+
+function rolePillClass(role) {
+  return {
+    owner: "pill--role-owner",
+    core_contributor: "pill--role-core",
+    reviewer: "pill--role-reviewer",
+    side_helper: "pill--role-side",
+    observer: "pill--role-observer"
+  }[normalizeRole(role)] || "pill--role-unknown";
 }
 
 function unique(values) {

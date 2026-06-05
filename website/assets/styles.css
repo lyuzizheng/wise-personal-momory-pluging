@@ -298,6 +298,37 @@ select {
   color: #87345c;
 }
 
+.pill--role-owner {
+  background: #e4f8d6;
+  border-color: #bde9a3;
+  color: #24480b;
+}
+
+.pill--role-core {
+  background: #e6f6f6;
+  border-color: #b8dddd;
+  color: #0f5654;
+}
+
+.pill--role-reviewer {
+  background: #e9efff;
+  border-color: #cbd8ff;
+  color: #244589;
+}
+
+.pill--role-side {
+  background: #fff1d4;
+  border-color: #efd091;
+  color: #76510d;
+}
+
+.pill--role-observer,
+.pill--role-unknown {
+  background: #eff1ec;
+  border-color: #d7ded0;
+  color: #4f554b;
+}
+
 .mini-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -437,4 +468,3 @@ code {
     width: 100%;
   }
 }
-

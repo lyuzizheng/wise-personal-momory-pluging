@@ -1,37 +1,14 @@
 window.WORK_TRACE_DATA = {
   "schema_version": 1,
-  "generated_at": "2026-06-05T10:01:25.852Z",
+  "generated_at": "2026-06-05T10:10:17.080Z",
   "trace": {
     "exists": true,
     "initialized": true,
-    "root": "/Users/zizheng.lyu/src/wise/wise-personal-momory-pluging/personal-work-trace",
+    "root": "personal-work-trace",
     "user": {
-      "schema_version": 1,
-      "initialized_at": "2026-06-05T12:35:09+03:00",
-      "init_date": "2026-06-05",
-      "preferred_name": "Zizheng",
-      "full_name": "Zizheng Lyu",
-      "work_email": "zizheng.lyu@wise.com",
-      "timezone": {
-        "local": "Europe/Tallinn",
-        "slack_profile": "Europe/Athens",
-        "note": "Slack status said Tallinn UTC+3; local environment is Europe/Tallinn."
-      },
-      "slack": {
-        "user_id": "U082F4917DY",
-        "username": "18704",
-        "display_name": "zizheng.lyu"
-      },
-      "google": {
-        "email": "zizheng.lyu@wise.com"
-      },
       "department": {
         "category": "Engineering",
-        "confidence": 0.9,
-        "evidence": [
-          "Slack title is Engineer.",
-          "Confluence onboarding identifies role as Software Engineer in Payment Ops Tooling."
-        ]
+        "confidence": 0.9
       },
       "role": {
         "title": "Engineer",
@@ -40,10 +17,8 @@ window.WORK_TRACE_DATA = {
         "tribe": "Regional Expansion",
         "company": "Wise"
       },
-      "manager_or_lead": {
-        "name": "Vladyslav Chornobai",
-        "confidence": 0.7,
-        "source": "Engineering onboarding plan - Zizheng"
+      "timezone": {
+        "local": "Europe/Tallinn"
       }
     },
     "date_range": {
@@ -55,7 +30,7 @@ window.WORK_TRACE_DATA = {
     "daily_record_count": 5,
     "event_count": 22,
     "project_count": 10,
-    "role_count": 4,
+    "role_count": 3,
     "source_gap_count": 7,
     "followup_count": 25,
     "risk_count": 10
@@ -210,6 +185,9 @@ window.WORK_TRACE_DATA = {
       "title": "payment-defects-incidents on-call shift started",
       "summary": "Received Rootly notification that the payment-defects-incidents main on-call shift started on 2026-06-01 at 09:00 Asia/Singapore.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.9,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -228,6 +206,9 @@ window.WORK_TRACE_DATA = {
       "title": "PDI support request acknowledged",
       "summary": "Acknowledged at least one PDI help request and created a Teleperformance PayOps tooling Jira ticket from Slack.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.82,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -246,6 +227,9 @@ window.WORK_TRACE_DATA = {
       "title": "Configurable queue catch-all/system alert discussion",
       "summary": "Discussed configurable queue behavior, including whether system alert cases should be excluded from a catch-all queue and whether LLM/JEXL tooling could help organize queue configurations.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.87,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -269,6 +253,9 @@ window.WORK_TRACE_DATA = {
       "title": "Ninjas deprecation context in PR/dev channel",
       "summary": "Participated in a payment-ops-tooling-dev discussion about behavior that might be removed during Ninjas deprecation.",
       "project_id": "webapp-ninjas-migration",
+      "project_role": "side_helper",
+      "role_confidence": "medium",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.76,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -287,6 +274,9 @@ window.WORK_TRACE_DATA = {
       "title": "Configurable queue cleanup and old-config removal",
       "summary": "Asked about removing old PayOps queue configs and using the config queue team-group column, offering to split/help with the task.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.91,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -310,6 +300,9 @@ window.WORK_TRACE_DATA = {
       "title": "JEXL verifier idea for queue routing",
       "summary": "Explored the idea of a Java repository/tool to run JEXL routing expressions for configurable queue validation.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.86,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -333,6 +326,9 @@ window.WORK_TRACE_DATA = {
       "title": "PayOps automation framework RFC shared",
       "summary": "Shared the PayOps Automation Process Paradigm and Framework Capabilities RFC with Amanda and discussed whether to pursue that framework direction.",
       "project_id": "automating-ops-tasks",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.88,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -361,6 +357,9 @@ window.WORK_TRACE_DATA = {
       "title": "Retry-control POI-count support explanation",
       "summary": "Helped explain retry-control alert behavior: detected POIs in the window can differ from suspended transfers shown in CSV/downloads.",
       "project_id": "retry-volume-control",
+      "project_role": "side_helper",
+      "role_confidence": "medium",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.84,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -379,6 +378,9 @@ window.WORK_TRACE_DATA = {
       "title": "System-alert case forwarding consultation",
       "summary": "Asked whether system alert cases can be forwarded to other teams and who should be consulted.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.72,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -402,6 +404,9 @@ window.WORK_TRACE_DATA = {
       "title": "PDIOC-649 handle empty ADS error responses (#3057)",
       "summary": "Delivered or merged the self-service fix for blank ADS error responses so empty 4xx bodies no longer break profile-switch cleanup handling.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.82,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -420,6 +425,9 @@ window.WORK_TRACE_DATA = {
       "title": "Balance withdrawal self-assignment investigation",
       "summary": "Investigated a balance-withdrawal/manual-authorisation issue where a workflow-created ticket appeared to be assigned back to the requester, and discussed possible root cause and handling.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.84,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -438,6 +446,9 @@ window.WORK_TRACE_DATA = {
       "title": "PDIOC-652 workflow-ui fix shared",
       "summary": "Started working on PDIOC-652 and shared workflow-ui PR 2809 for review to fix safe rendering of document deletion errors.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.86,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -461,6 +472,9 @@ window.WORK_TRACE_DATA = {
       "title": "[POT-2391] chore: deprecate backlog v1 (#1678)",
       "summary": "Merged the Samurai side of PayOps backlog v1 deprecation, keeping Routine backlog on the v2 path.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.78,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -479,6 +493,9 @@ window.WORK_TRACE_DATA = {
       "title": "docs: add case assignment WFM refactor plan (#1677)",
       "summary": "Added the Routine case assignment and WFM status refactor plan documentation to Samurai.",
       "project_id": "configurable-queue",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.8,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -497,6 +514,9 @@ window.WORK_TRACE_DATA = {
       "title": "Money-to-email auto-cancel timing research",
       "summary": "Researched and answered that money-to-email auto-cancel timing is 10 working days, the old 7-day webapp config is no longer in use, and docs should be updated.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.82,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -529,6 +549,9 @@ window.WORK_TRACE_DATA = {
       "title": "[PDIOC-653] fix: support suspended transfer delay minutes (#12664)",
       "summary": "Delivered or merged a dd-case fix allowing suspended transfer auto-snooze configuration to support delay minutes.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.81,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -547,6 +570,9 @@ window.WORK_TRACE_DATA = {
       "title": "ZD sync custom-field extraction discussion",
       "summary": "Discussed ZD sync/custom-field extraction, including whether to fetch custom fields to populate transfer ID and whether contact-side contract changes or capacity were needed.",
       "project_id": "cross-team-escalations-zd-ddcase",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.9,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -579,6 +605,9 @@ window.WORK_TRACE_DATA = {
       "title": "fix(POT-2411): track send warning on final escalation 9.14.11 (#3038)",
       "summary": "Delivered or merged the final Send Case warning-tracking fix in plugin-twilio-flex for POT-2411.",
       "project_id": "cross-team-escalations-zd-ddcase",
+      "project_role": "core_contributor",
+      "role_confidence": "high",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.79,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -597,6 +626,9 @@ window.WORK_TRACE_DATA = {
       "title": "EMPOI internal-account transfer proposal",
       "summary": "Posted a proposal about allowing an internal account to transfer to recipients from other accounts, motivated by EMPOI recipient-copy edge cases and special logic.",
       "project_id": "extra-money-payouts",
+      "project_role": "core_contributor",
+      "role_confidence": "medium",
+      "role_reason": "Inherited from the normalized project record.",
       "confidence": 0.9,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -629,6 +661,9 @@ window.WORK_TRACE_DATA = {
       "title": "PDIOC-654 GSO ID in Samurai",
       "summary": "Followed up on a request to display Global Switch Off ID in Samurai for suspended POIs, resulting in a synced Jira work item PDIOC-654.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.82,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -647,6 +682,9 @@ window.WORK_TRACE_DATA = {
       "title": "PDI support threads marked fixed",
       "summary": "Marked or stated that two help-payment-defects-incidents support items were fixed.",
       "project_id": "support-and-on-call",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.82,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -665,6 +703,9 @@ window.WORK_TRACE_DATA = {
       "title": "Personal work-memory plugin context shared",
       "summary": "Shared the wise-personal-momory-pluging repository and seed source links for initializing personal work memory.",
       "project_id": "work-memory",
+      "project_role": "unknown",
+      "role_confidence": null,
+      "role_reason": null,
       "confidence": 0.95,
       "privacy_level": "internal",
       "safe_to_publish": false,
@@ -682,6 +723,7 @@ window.WORK_TRACE_DATA = {
       "status": "active",
       "themes": [],
       "role": "Unspecified role",
+      "involvement_role": "unknown",
       "confidence": 0.82,
       "aliases": [],
       "source_links": [],
@@ -696,6 +738,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 3,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 9,
       "daily_count": 4,
       "latest_date": "2026-06-05"
@@ -710,6 +753,7 @@ window.WORK_TRACE_DATA = {
         "resolution"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "high",
       "confidence": null,
       "aliases": [
@@ -731,6 +775,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 4,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 6,
       "daily_count": 3,
       "latest_date": "2026-06-03"
@@ -746,6 +791,7 @@ window.WORK_TRACE_DATA = {
         "resolution"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "high",
       "confidence": null,
       "aliases": [
@@ -768,6 +814,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 2,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 2,
       "daily_count": 1,
       "latest_date": "2026-06-04"
@@ -783,6 +830,7 @@ window.WORK_TRACE_DATA = {
         "resolution"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "high",
       "confidence": null,
       "aliases": [
@@ -806,6 +854,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 1,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 1,
       "daily_count": 1,
       "latest_date": "2026-06-02"
@@ -820,6 +869,7 @@ window.WORK_TRACE_DATA = {
         "operational_risk"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "medium",
       "confidence": null,
       "aliases": [
@@ -842,6 +892,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 2,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 1,
       "daily_count": 1,
       "latest_date": "2026-06-04"
@@ -856,6 +907,7 @@ window.WORK_TRACE_DATA = {
         "security"
       ],
       "role": "Team-adjacent engineer",
+      "involvement_role": "side_helper",
       "role_confidence": "medium",
       "confidence": null,
       "aliases": [
@@ -878,6 +930,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 0,
       "followups_count": 0,
       "risks_count": 0,
+      "role_counts": {},
       "event_count": 1,
       "daily_count": 0,
       "latest_date": "2026-06-01"
@@ -888,6 +941,7 @@ window.WORK_TRACE_DATA = {
       "status": "active",
       "themes": [],
       "role": "Unspecified role",
+      "involvement_role": "unknown",
       "confidence": 0.95,
       "aliases": [],
       "source_links": [],
@@ -902,6 +956,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 1,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 1,
       "daily_count": 1,
       "latest_date": "2026-06-05"
@@ -916,6 +971,7 @@ window.WORK_TRACE_DATA = {
         "operational_risk"
       ],
       "role": "Contributor or adjacent engineer",
+      "involvement_role": "side_helper",
       "role_confidence": "medium",
       "confidence": null,
       "aliases": [
@@ -938,6 +994,7 @@ window.WORK_TRACE_DATA = {
       "decisions_count": 1,
       "followups_count": 1,
       "risks_count": 1,
+      "role_counts": {},
       "event_count": 1,
       "daily_count": 1,
       "latest_date": "2026-06-02"
@@ -952,6 +1009,7 @@ window.WORK_TRACE_DATA = {
         "security"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "high",
       "confidence": null,
       "aliases": [
@@ -970,6 +1028,7 @@ window.WORK_TRACE_DATA = {
       "paths": [
         "projects/active/case-based-access.yaml"
       ],
+      "role_counts": {},
       "event_count": 0,
       "daily_count": 0,
       "latest_date": null,
@@ -988,6 +1047,7 @@ window.WORK_TRACE_DATA = {
         "operational_risk"
       ],
       "role": "Engineer",
+      "involvement_role": "core_contributor",
       "role_confidence": "high",
       "confidence": null,
       "aliases": [
@@ -1005,6 +1065,7 @@ window.WORK_TRACE_DATA = {
       "paths": [
         "projects/active/manual-internal-transfers.yaml"
       ],
+      "role_counts": {},
       "event_count": 0,
       "daily_count": 0,
       "latest_date": null,
@@ -1016,7 +1077,8 @@ window.WORK_TRACE_DATA = {
   ],
   "roles": [
     {
-      "name": "Engineer",
+      "name": "core_contributor",
+      "label": "Core contributor",
       "project_count": 6,
       "event_count": 10,
       "projects": [
@@ -1029,28 +1091,23 @@ window.WORK_TRACE_DATA = {
       ]
     },
     {
-      "name": "Unspecified role",
+      "name": "side_helper",
+      "label": "Side helper",
+      "project_count": 2,
+      "event_count": 2,
+      "projects": [
+        "webapp-ninjas-migration",
+        "retry-volume-control"
+      ]
+    },
+    {
+      "name": "unknown",
+      "label": "Unknown",
       "project_count": 2,
       "event_count": 10,
       "projects": [
         "support-and-on-call",
         "work-memory"
-      ]
-    },
-    {
-      "name": "Contributor or adjacent engineer",
-      "project_count": 1,
-      "event_count": 1,
-      "projects": [
-        "retry-volume-control"
-      ]
-    },
-    {
-      "name": "Team-adjacent engineer",
-      "project_count": 1,
-      "event_count": 1,
-      "projects": [
-        "webapp-ninjas-migration"
       ]
     }
   ],
@@ -1164,7 +1221,7 @@ window.WORK_TRACE_DATA = {
           "full_jira_changelog_not_available",
           "2026-06-05_midday_partial_record"
         ],
-        "path": "/Users/zizheng.lyu/src/wise/wise-personal-momory-pluging/personal-work-trace/weekly/2026/2026-W23.summary.json"
+        "path": "weekly/2026/2026-W23.summary.json"
       }
     ],
     "monthly": [],

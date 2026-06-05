@@ -28,8 +28,9 @@ async function buildDataset(root) {
 
   const config = await readConfig(root);
   const dailyRecords = await readDailyRecords(root);
-  const events = await readEvents(root);
+  let events = await readEvents(root);
   const projects = await readProjects(root, events, dailyRecords);
+  events = enrichEventsWithProjectRoles(events, projects);
   const rollups = await readRollups(root);
   const signals = collectSignals(dailyRecords, events, projects, rollups);
   const roles = collectRoles(projects);
@@ -41,8 +42,8 @@ async function buildDataset(root) {
     trace: {
       exists: true,
       initialized: existsSync(path.join(root, "state", "skill_snapshot.json")) || existsSync(path.join(root, "README.md")),
-      root,
-      user: config.user,
+      root: displayTraceRoot(root),
+      user: sanitizeUser(config.user),
       date_range: dateRange
     },
     stats: {
@@ -71,7 +72,7 @@ function emptyDataset(root, generatedAt, reason) {
     trace: {
       exists: false,
       initialized: false,
-      root,
+      root: displayTraceRoot(root),
       date_range: null,
       reason
     },
@@ -149,6 +150,9 @@ async function readEvents(root) {
         title: row.raw_title,
         summary: row.factual_summary,
         project_id: row.selected_project_id || firstProjectCandidate(row.project_candidates),
+        project_role: normalizeInvolvementRole(row.selected_project_role || firstProjectCandidateRole(row.project_candidates)),
+        role_confidence: numberOrNull(row.role_confidence ?? firstProjectCandidateRoleConfidence(row.project_candidates)),
+        role_reason: row.role_reason || firstProjectCandidateRoleReason(row.project_candidates),
         confidence: numberOrNull(row.classification_confidence),
         privacy_level: row.privacy?.level,
         safe_to_publish: Boolean(row.privacy?.safe_to_publish),
@@ -194,6 +198,7 @@ async function readProjects(root, events, dailyRecords) {
       name: titleFromId(event.project_id),
       status: "observed",
       role: "Unspecified role",
+      involvement_role: normalizeInvolvementRole(event.project_role),
       lifecycle: "observed",
       paths: []
     });
@@ -211,11 +216,14 @@ async function readProjects(root, events, dailyRecords) {
   return [...projectMap.values()].map((project) => {
     const projectEvents = events.filter((event) => event.project_id === project.id);
     const latestDate = projectEvents.map((event) => event.date).filter(Boolean).sort().at(-1) || null;
+    const roleCounts = countBy(projectEvents.map((event) => event.project_role));
     return {
       ...project,
       name: project.name || titleFromId(project.id),
       status: project.status || project.lifecycle || "unknown",
       role: project.role || "Unspecified role",
+      involvement_role: effectiveInvolvementRole(project, roleCounts),
+      role_counts: roleCounts,
       event_count: projectEvents.length,
       daily_count: dailyTouches.get(project.id)?.size || 0,
       latest_date: latestDate,
@@ -255,14 +263,16 @@ async function parseProjectFile(root, file) {
   }
 
   const id = meta.id || meta.project_id || projectIdFromPath(file);
-  const role = meta.role?.user_role || meta.user_role || meta.role;
+  const rawRole = meta.role?.user_role || meta.user_role || (typeof meta.role === "string" ? meta.role : undefined);
+  const involvementRole = meta.involvement_role || meta.project_role || meta.role?.involvement_role || rawRole;
   return {
     id,
     name: meta.name,
     status: meta.status,
     priority: meta.priority,
     themes: arrayFrom(meta.themes),
-    role: typeof role === "string" ? role : undefined,
+    role: typeof rawRole === "string" ? rawRole : undefined,
+    involvement_role: normalizeInvolvementRole(involvementRole),
     role_confidence: meta.role?.confidence || meta.role_confidence,
     confidence: numberOrNull(meta.confidence),
     aliases: arrayFrom(meta.aliases),
@@ -301,13 +311,13 @@ async function readProjectDetails(root, dir, project) {
 
 async function readRollups(root) {
   return {
-    weekly: await readSummaryFiles(path.join(root, "weekly"), /\.summary\.json$/, "week"),
-    monthly: await readSummaryFiles(path.join(root, "monthly"), /\.summary\.json$/, "month"),
-    quarterly: await readSummaryFiles(path.join(root, "quarterly"), /\.summary\.json$/, "quarter")
+    weekly: await readSummaryFiles(root, path.join(root, "weekly"), /\.summary\.json$/, "week"),
+    monthly: await readSummaryFiles(root, path.join(root, "monthly"), /\.summary\.json$/, "month"),
+    quarterly: await readSummaryFiles(root, path.join(root, "quarterly"), /\.summary\.json$/, "quarter")
   };
 }
 
-async function readSummaryFiles(dir, pattern, labelKey) {
+async function readSummaryFiles(root, dir, pattern, labelKey) {
   const files = await listMatching(dir, pattern);
   const rows = [];
   for (const file of files) {
@@ -316,7 +326,7 @@ async function readSummaryFiles(dir, pattern, labelKey) {
     rows.push({
       ...value,
       [labelKey]: value[labelKey] || path.basename(file).replace(".summary.json", ""),
-      path: file
+      path: rel(root, file)
     });
   }
   return rows.sort((a, b) => String(a[labelKey]).localeCompare(String(b[labelKey])));
@@ -350,17 +360,32 @@ function collectSignals(dailyRecords, events, projects, rollups) {
   };
 }
 
+function enrichEventsWithProjectRoles(events, projects) {
+  const projectIndex = new Map(projects.map((project) => [project.id, project]));
+  return events.map((event) => {
+    if (event.project_role && event.project_role !== "unknown") return event;
+    const projectRole = projectIndex.get(event.project_id)?.involvement_role;
+    if (!projectRole || projectRole === "unknown") return { ...event, role_confidence: null, role_reason: null };
+    return {
+      ...event,
+      project_role: projectRole,
+      role_confidence: event.role_confidence || projectIndex.get(event.project_id)?.role_confidence || null,
+      role_reason: event.role_reason || "Inherited from the normalized project record."
+    };
+  });
+}
+
 function collectRoles(projects) {
   const roles = new Map();
   for (const project of projects) {
-    const role = project.role || "Unspecified role";
-    const item = roles.get(role) || { name: role, project_count: 0, event_count: 0, projects: [] };
+    const role = normalizeInvolvementRole(project.involvement_role || project.role);
+    const item = roles.get(role) || { name: role, label: roleLabel(role), project_count: 0, event_count: 0, projects: [] };
     item.project_count += 1;
     item.event_count += project.event_count || 0;
     item.projects.push(project.id);
     roles.set(role, item);
   }
-  return [...roles.values()].sort((a, b) => (b.event_count - a.event_count) || a.name.localeCompare(b.name));
+  return [...roles.values()].sort((a, b) => roleSort(a.name, b.name) || (b.event_count - a.event_count) || a.name.localeCompare(b.name));
 }
 
 function collectSources(configSources, events, dailyRecords) {
@@ -537,6 +562,86 @@ function firstProjectCandidate(candidates) {
   return Array.isArray(candidates) && candidates[0] ? candidates[0].project_id : null;
 }
 
+function firstProjectCandidateRole(candidates) {
+  return Array.isArray(candidates) && candidates[0] ? candidates[0].role || candidates[0].user_role || candidates[0].involvement_role : null;
+}
+
+function firstProjectCandidateRoleConfidence(candidates) {
+  return Array.isArray(candidates) && candidates[0] ? candidates[0].role_confidence || candidates[0].involvement_role_confidence : null;
+}
+
+function firstProjectCandidateRoleReason(candidates) {
+  return Array.isArray(candidates) && candidates[0] ? candidates[0].role_reason || candidates[0].involvement_role_reason : null;
+}
+
+function sanitizeUser(user) {
+  const safe = {};
+  const department = pickDefined(user?.department, ["category", "confidence"]);
+  const role = pickDefined(user?.role, ["title", "team", "squad", "tribe", "company"]);
+  const timezone = pickDefined(user?.timezone, ["local"]);
+
+  if (Object.keys(department).length) safe.department = department;
+  if (Object.keys(role).length) safe.role = role;
+  if (Object.keys(timezone).length) safe.timezone = timezone;
+
+  return safe;
+}
+
+function pickDefined(source, keys) {
+  const result = {};
+  if (!source || typeof source !== "object") return result;
+  for (const key of keys) {
+    if (source[key] !== undefined && source[key] !== null && source[key] !== "") result[key] = source[key];
+  }
+  return result;
+}
+
+function effectiveInvolvementRole(project, roleCounts) {
+  if (project.involvement_role && project.involvement_role !== "unknown") return project.involvement_role;
+  return dominantRole(roleCounts) || normalizeInvolvementRole(project.role);
+}
+
+function countBy(values) {
+  const counts = {};
+  for (const value of values.map(normalizeInvolvementRole).filter((value) => value !== "unknown")) {
+    counts[value] = (counts[value] || 0) + 1;
+  }
+  return counts;
+}
+
+function dominantRole(counts) {
+  return Object.entries(counts || {}).sort((a, b) => (b[1] - a[1]) || roleSort(a[0], b[0]))[0]?.[0] || null;
+}
+
+function normalizeInvolvementRole(value) {
+  const text = String(value || "").trim().toLowerCase();
+  const canonical = text.replaceAll("-", "_");
+  if (["owner", "core_contributor", "reviewer", "side_helper", "observer", "unknown"].includes(canonical)) return canonical;
+  if (!text || text === "null" || text === "undefined") return "unknown";
+  if (/\b(owner|dri|accountable|lead|primary)\b/.test(text)) return "owner";
+  if (/\b(reviewer|review|approver|approval|consulted)\b/.test(text)) return "reviewer";
+  if (/\b(side|helper|support|adjacent|assist|advice|advisory)\b/.test(text)) return "side_helper";
+  if (/\b(observer|watch|fyi|awareness|mentioned|reader)\b/.test(text)) return "observer";
+  if (/\b(core|contributor|contributing|engineer|developer|builder|implementer|analysis|analyst|authored|delivery)\b/.test(text)) return "core_contributor";
+  return "unknown";
+}
+
+function roleLabel(role) {
+  return {
+    owner: "Owner",
+    core_contributor: "Core contributor",
+    reviewer: "Reviewer",
+    side_helper: "Side helper",
+    observer: "Observer",
+    unknown: "Unknown"
+  }[role] || "Unknown";
+}
+
+function roleSort(a, b) {
+  const order = ["owner", "core_contributor", "reviewer", "side_helper", "observer", "unknown"];
+  return (order.indexOf(a) === -1 ? order.length : order.indexOf(a)) - (order.indexOf(b) === -1 ? order.length : order.indexOf(b));
+}
+
 function dateFromTimestamp(value) {
   return String(value || "").slice(0, 10) || null;
 }
@@ -576,7 +681,11 @@ function rel(root, file) {
   return path.relative(root, file).replaceAll(path.sep, "/");
 }
 
+function displayTraceRoot(root) {
+  const relative = path.relative(repoRoot, root).replaceAll(path.sep, "/");
+  return relative && !relative.startsWith("..") ? relative : path.basename(root);
+}
+
 function unique(values) {
   return [...new Set(values.filter((value) => value !== undefined && value !== null && value !== ""))].sort((a, b) => String(a).localeCompare(String(b)));
 }
-
