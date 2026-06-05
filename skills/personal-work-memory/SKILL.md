@@ -674,6 +674,15 @@ Responsibilities:
 
 Run daily after the user’s local workday or the next morning.
 
+Before generating or updating the daily record, prompt the user for temporary daily data to add on top of recorded history:
+
+- work that happened outside available source connectors;
+- decisions, follow-ups, blockers, or risks they remember;
+- meetings, docs, or project context that may not appear in imported traces;
+- anything from today that should be added as a manual note before synthesis.
+
+If the user provides temporary data, store or stage it under `personal-work-trace/inbox/manual/YYYY-MM-DD.md` before synthesis. If the user says there is no temporary data, record that no manual supplement was provided and continue.
+
 Input:
 
 - target date, default yesterday in user's timezone;
@@ -689,30 +698,31 @@ Algorithm:
    - start = YYYY-MM-DDT00:00:00 in user timezone;
    - end = next day T00:00:00.
 2. Load config.
-3. Fetch traces from all enabled and available sources.
-4. Store raw traces in inbox/imports/YYYY-MM-DD/*.jsonl.
-5. Normalize traces into event objects.
-6. Validate event schema.
-7. Dedupe using dedupe_key and source_object_id.
-8. Redact or skip unsafe content.
-9. Classify each event into project candidates.
-10. Select project if confidence >= auto_assign_project threshold.
-11. Leave event unclassified if confidence is low.
-12. Write events/YYYY/MM/YYYY-MM-DD.events.jsonl.
-13. Generate daily/YYYY/MM/YYYY-MM-DD.md.
-14. Generate daily/YYYY/MM/YYYY-MM-DD.summary.json.
-15. Update each touched project:
+3. Prompt for temporary daily data and stage any manual supplement.
+4. Fetch traces from all enabled and available sources.
+5. Store raw traces in inbox/imports/YYYY-MM-DD/*.jsonl.
+6. Normalize traces into event objects.
+7. Validate event schema.
+8. Dedupe using dedupe_key and source_object_id.
+9. Redact or skip unsafe content.
+10. Classify each event into project candidates.
+11. Select project if confidence >= auto_assign_project threshold.
+12. Leave event unclassified if confidence is low.
+13. Write events/YYYY/MM/YYYY-MM-DD.events.jsonl.
+14. Generate daily/YYYY/MM/YYYY-MM-DD.md.
+15. Generate daily/YYYY/MM/YYYY-MM-DD.summary.json.
+16. Update each touched project:
     - append timeline.jsonl;
     - update daily-index.md;
     - update decisions.md;
     - update followups.md;
     - update risks.md.
-16. If end of week, update weekly record.
-17. If end of month, update monthly record.
-18. If end of quarter, update quarterly record.
-19. Update state files.
-20. Write logs/YYYY-MM-DD.run.md.
-21. Return review summary to user.
+17. If end of week, update weekly record.
+18. If end of month, update monthly record.
+19. If end of quarter, update quarterly record.
+20. Update state files.
+21. Write logs/YYYY-MM-DD.run.md.
+22. Return review summary to user.
 
 ---
 

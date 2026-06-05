@@ -13,6 +13,7 @@
     "codex",
     "claude"
   ],
+  "mcpServers": {},
   "skills": [
     "./skills/"
   ]

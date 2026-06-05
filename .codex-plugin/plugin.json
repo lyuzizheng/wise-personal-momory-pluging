@@ -26,9 +26,9 @@
     ],
     "brandColor": "#2563EB",
     "defaultPrompt": [
+      "Use $personal-work-memory-init to seed my work trace.",
       "Use $personal-work-memory to create today's work trace.",
-      "Use $personal-work-memory to summarize this week's project activity.",
-      "Use $personal-work-memory to classify unfiled work events."
+      "Use $personal-history-chat to ask about my work history."
     ]
   }
 }
