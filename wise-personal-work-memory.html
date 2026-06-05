@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wise Personal Work Memory Plugin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* === Font Strategy === */
+      --wise-sans: 'Inter';
+      --wise-sans-fallback: var(--wise-sans), 'Inter', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-display: var(--wise-sans-fallback);
+
+      /* === Wise Color Tokens (constant) === */
+      --wise-bright-green: #9FE870;
+      --wise-forest-green: #163300;
+      --wise-bright-orange: #FFC091;
+      --wise-bright-yellow: #FFEB69;
+      --wise-bright-blue: #A0E1E1;
+      --wise-bright-pink: #FFD7EF;
+      --wise-dark-purple: #260A2F;
+      --wise-dark-gold: #3A341C;
+      --wise-dark-charcoal: #21231D;
+      --wise-dark-maroon: #320707;
+      --wise-content-primary: #0E0F0C;
+      --wise-content-secondary: #454745;
+      --wise-content-tertiary: #6A6C6A;
+      --wise-bg-screen: #FFFFFF;
+      --wise-bg-neutral: rgba(22, 51, 0, 0.08);
+      --wise-negative: #A8200D;
+      --wise-positive: #2F5711;
+      --wise-warning: #EDC843;
+
+      /* === Semantic Tokens (overridden by presets) === */
+      --bg-primary: var(--wise-bg-screen);
+      --bg-secondary: var(--wise-bg-neutral);
+      --bg-accent: var(--wise-bright-green);
+      --text-primary: var(--wise-content-primary);
+      --text-secondary: var(--wise-content-secondary);
+      --text-on-accent: var(--wise-forest-green);
+      --interactive: var(--wise-forest-green);
+      --highlight: var(--wise-bright-green);
+      --border-color: rgba(106, 108, 106, 0.2);
+
+      /* === Typography Scale === */
+      --size-display-large: clamp(48px, 5vw, 96px);
+      --size-display-medium: clamp(36px, 3.5vw, 64px);
+      --size-display-small: clamp(28px, 2.5vw, 40px);
+      --size-title-screen: clamp(24px, 2vw, 30px);
+      --size-title-section: clamp(20px, 1.8vw, 26px);
+      --size-body-large: clamp(14px, 1.2vw, 18px);
+      --size-body-default: clamp(12px, 1vw, 16px);
+      --display-text-transform: none;
+      --display-letter-spacing: normal;
+      --display-line-height: 1.1;
+
+      /* === Spacing Tokens (Wise 8px grid) === */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --space-3xl: 64px;
+      --space-4xl: 96px;
+      --between-text: 8px;
+      --display-text-bottom: 16px;
+      --between-sections: 32px;
+
+      /* === Border Radius (Wise desktop) === */
+      --radius-sm: 16px;
+      --radius-md: 20px;
+      --radius-lg: 30px;
+      --radius-xl: 40px;
+      --radius-2xl: 60px;
+      --radius: var(--radius-md);
+
+      /* === Motion Tokens (Wise motion system) === */
+      --transition-duration: 200ms;
+      --transition-easing: cubic-bezier(0.2, 0, 0, 1);
+      --transition-fluid: cubic-bezier(0.4, 0, 0.2, 1);
+      --stagger-delay: 60ms;
+
+      /* === Wise Bold Preset Overrides === */
+      --bg-primary: #163300;
+      --bg-secondary: rgba(255, 255, 255, 0.1);
+      --bg-accent: #9FE870;
+      --text-primary: #FFFFFF;
+      --text-secondary: rgba(255, 255, 255, 0.8);
+      --text-on-accent: #163300;
+      --interactive: #9FE870;
+      --highlight: #FFEB69;
+      --border-color: rgba(255, 255, 255, 0.1);
+      --radius: 30px;
+      --display-text-transform: uppercase;
+      --display-letter-spacing: 0.02em;
+      --display-line-height: 0.85;
+      --transition-duration: 250ms;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      background: #163300;
+      overflow-x: hidden;
+    }
+
+    .deck { height: 100vh; overflow-y: auto; scroll-snap-type: y mandatory; }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      scroll-snap-align: start; display: flex; flex-direction: column;
+      justify-content: center; padding: var(--space-3xl) var(--space-4xl);
+      position: relative; overflow: hidden; background: #163300;
+    }
+
+    .slide--title { align-items: center; text-align: center; }
+
+    .slide--section {
+      background: var(--bg-accent); color: var(--text-on-accent);
+      justify-content: flex-start; align-items: flex-start;
+    }
+    .slide--section h2 { text-transform: uppercase; font-weight: 800; letter-spacing: 0.01em; }
+
+    .slide--subsection {
+      background: var(--bg-secondary); color: var(--wise-bright-green);
+      justify-content: flex-start; align-items: flex-start;
+    }
+    .slide--subsection h2 { text-transform: uppercase; font-weight: 800; letter-spacing: 0.01em; }
+
+    .section-number {
+      position: absolute; bottom: var(--space-xl); left: var(--space-4xl);
+      font-size: clamp(48px, 4vw, 80px); font-weight: 700;
+      color: inherit; opacity: 0.35; font-variant-numeric: tabular-nums;
+    }
+
+    .eyebrow {
+      font-size: var(--size-body-default); color: var(--text-secondary);
+      font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-xs);
+    }
+
+    .slide--statement { align-items: center; text-align: center; justify-content: center; }
+
+    .slide h1 {
+      font-family: var(--font-display);
+      font-size: var(--size-display-large);
+      font-weight: 700;
+      text-transform: var(--display-text-transform);
+      letter-spacing: var(--display-letter-spacing);
+      line-height: var(--display-line-height);
+      margin-bottom: var(--display-text-bottom);
+    }
+
+    .slide h2 {
+      font-family: var(--font-display);
+      font-size: var(--size-display-medium);
+      font-weight: 600;
+      margin-bottom: var(--between-sections);
+    }
+
+    .slide h3 {
+      font-size: var(--size-title-screen);
+      font-weight: 600;
+      margin-bottom: var(--space-md);
+      text-transform: none;
+    }
+
+    .slide p, .slide li {
+      font-size: var(--size-body-large);
+      line-height: 1.6;
+      max-width: 60ch;
+      margin-bottom: var(--between-text);
+      color: var(--text-secondary);
+    }
+
+    .slide ul, .slide ol {
+      padding-left: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .highlight { color: var(--highlight); }
+    .accent-bar { width: 60px; height: 4px; background: var(--highlight); border-radius: 2px; margin-bottom: var(--space-lg); }
+    .card { background: var(--bg-secondary); border-radius: var(--radius); padding: var(--space-xl); border: 1px solid var(--border-color); }
+    .progress { position: fixed; bottom: 0; left: 0; height: 3px; background: var(--highlight); transition: width var(--transition-duration) var(--transition-easing); z-index: 100; }
+
+    .tagline {
+      font-size: var(--size-title-screen);
+      color: var(--highlight);
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: -0.01em;
+      margin-top: var(--space-lg);
+    }
+
+    .code-block {
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: var(--space-lg);
+      font-family: 'Courier New', monospace;
+      font-size: clamp(13px, 1.1vw, 16px);
+      color: var(--wise-bright-green);
+      overflow-x: auto;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-xl);
+    }
+
+    .feature-card {
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+      padding: var(--space-lg);
+      border: 1px solid var(--border-color);
+    }
+
+    .feature-card h3 {
+      color: var(--highlight);
+      margin-bottom: var(--space-sm);
+      text-transform: none;
+      font-size: var(--size-title-section);
+    }
+
+    .feature-card p {
+      font-size: clamp(13px, 1.05vw, 16px);
+      line-height: 1.5;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .slide > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity var(--transition-duration) var(--transition-easing),
+                    transform var(--transition-duration) var(--transition-easing);
+      }
+      .slide.visible > * { opacity: 1; transform: translateY(0); }
+      .slide.visible > *:nth-child(1) { transition-delay: 0ms; }
+      .slide.visible > *:nth-child(2) { transition-delay: var(--stagger-delay); }
+      .slide.visible > *:nth-child(3) { transition-delay: calc(var(--stagger-delay) * 2); }
+      .slide.visible > *:nth-child(4) { transition-delay: calc(var(--stagger-delay) * 3); }
+      .slide.visible > *:nth-child(5) { transition-delay: calc(var(--stagger-delay) * 4); }
+      .slide.visible > *:nth-child(6) { transition-delay: calc(var(--stagger-delay) * 5); }
+    }
+
+    @media (max-height: 700px) {
+      :root {
+        --space-3xl: 48px;
+        --space-4xl: 64px;
+        --size-display-large: clamp(36px, 4.5vw, 64px);
+        --size-display-medium: clamp(28px, 3vw, 48px);
+      }
+    }
+
+    @media (max-height: 500px) {
+      :root {
+        --space-3xl: 32px;
+        --space-4xl: 48px;
+        --size-display-large: clamp(28px, 3.5vw, 48px);
+        --size-body-large: clamp(12px, 1vw, 14px);
+      }
+    }
+
+    @media (max-width: 600px) {
+      :root { --size-display-large: clamp(28px, 7vw, 48px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+      }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="deck">
+
+    <!-- Title Slide -->
+    <section class="slide slide--title">
+      <h1>Personal<br>Work Memory</h1>
+      <p class="tagline">Evidence-backed work traces for AI agents</p>
+    </section>
+
+    <!-- Problem Statement -->
+    <section class="slide slide--statement">
+      <div class="eyebrow">The Problem</div>
+      <h2>Your work disappears<br>into disconnected tools</h2>
+    </section>
+
+    <!-- Context Scatter -->
+    <section class="slide">
+      <div class="eyebrow">Scattered Context</div>
+      <h3>GitHub commits, Jira tickets, Slack threads, meeting notes...</h3>
+      <p>Each tool holds a piece of your work story, but none of them connect the dots.</p>
+    </section>
+
+    <!-- Memory Loss -->
+    <section class="slide slide--statement">
+      <h2>Ask yourself:<br>"What did I work on<br>last month?"</h2>
+    </section>
+
+    <!-- Section: Solution -->
+    <section class="slide slide--section">
+      <h2>A unified,<br>searchable<br>memory system</h2>
+      <span class="section-number">01</span>
+    </section>
+
+    <!-- What It Is -->
+    <section class="slide">
+      <div class="eyebrow">What It Is</div>
+      <h3>Personal Work Memory Plugin</h3>
+      <p>A Claude/Codex-compatible plugin that automatically maintains evidence-backed work traces from all your tools.</p>
+    </section>
+
+    <!-- AI-First Design -->
+    <section class="slide">
+      <div class="eyebrow">Design Philosophy</div>
+      <h3>Built for AI agents, readable by humans</h3>
+      <p>Structured for future retrieval, not manual journaling.</p>
+    </section>
+
+    <!-- Evidence-Backed -->
+    <section class="slide slide--statement">
+      <h2>Every entry<br>links to evidence</h2>
+    </section>
+
+    <!-- Privacy -->
+    <section class="slide">
+      <div class="eyebrow">Privacy First</div>
+      <h3>Your work trace stays local</h3>
+      <p>Stored in <span class="highlight">personal-work-trace/</span> and ignored by git.</p>
+    </section>
+
+    <!-- Section: How It Works -->
+    <section class="slide slide--section">
+      <h2>Three skills,<br>one workflow</h2>
+      <span class="section-number">02</span>
+    </section>
+
+    <!-- Skill 1: Init -->
+    <section class="slide">
+      <div class="eyebrow">Skill 01</div>
+      <h3>personal-work-memory-init</h3>
+      <p>Seeds an empty trace store or backfills historical dates.</p>
+    </section>
+
+    <!-- Skill 2: Memory -->
+    <section class="slide">
+      <div class="eyebrow">Skill 02</div>
+      <h3>personal-work-memory</h3>
+      <p>Daily records, weekly rollups, project timelines, and follow-up extraction.</p>
+    </section>
+
+    <!-- Skill 3: Chat -->
+    <section class="slide">
+      <div class="eyebrow">Skill 03</div>
+      <h3>personal-history-chat</h3>
+      <p>Chat with your work history. Ask questions, find insights, lookup evidence.</p>
+    </section>
+
+    <!-- Source Discovery -->
+    <section class="slide">
+      <div class="eyebrow">Source Agnostic</div>
+      <h3>Uses whatever sources are available</h3>
+      <p>GitHub, Jira, Confluence, Slack, Gmail, Google Calendar, Figma, or manual notes.</p>
+    </section>
+
+    <!-- Indirect Evidence -->
+    <section class="slide">
+      <div class="eyebrow">Smart Fallbacks</div>
+      <h3>When direct connectors aren't available</h3>
+      <p>Uses Slack bot posts, channel membership, and mentions as evidence pointers.</p>
+    </section>
+
+    <!-- Section: Key Features -->
+    <section class="slide slide--section">
+      <h2>What makes it<br>powerful</h2>
+      <span class="section-number">03</span>
+    </section>
+
+    <!-- Feature Grid -->
+    <section class="slide">
+      <div class="eyebrow">Core Capabilities</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Evidence Links</h3>
+          <p>Every entry connects to source data</p>
+        </div>
+        <div class="feature-card">
+          <h3>Project Association</h3>
+          <p>Events mapped to projects with confidence scores</p>
+        </div>
+        <div class="feature-card">
+          <h3>Time Travel</h3>
+          <p>Backfill any date range on demand</p>
+        </div>
+        <div class="feature-card">
+          <h3>Smart Rollups</h3>
+          <p>Daily → Weekly → Monthly summaries</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stable Identifiers -->
+    <section class="slide">
+      <div class="eyebrow">Designed for Retrieval</div>
+      <h3>Stable identifiers across all entries</h3>
+      <p>Projects, goals, and workstreams maintain consistent IDs for long-term queries.</p>
+    </section>
+
+    <!-- Append-Safe -->
+    <section class="slide">
+      <div class="eyebrow">History Preservation</div>
+      <h3>Append-safe design</h3>
+      <p>Updates add new records without destroying past entries.</p>
+    </section>
+
+    <!-- Section: Getting Started -->
+    <section class="slide slide--section">
+      <h2>Ready in<br>3 commands</h2>
+      <span class="section-number">04</span>
+    </section>
+
+    <!-- Command 1 -->
+    <section class="slide">
+      <div class="eyebrow">Step 1: Initialize</div>
+      <div class="code-block">$ personal-work-memory-init</div>
+      <p>Seeds your work trace for today or backfills a date range.</p>
+    </section>
+
+    <!-- Command 2 -->
+    <section class="slide">
+      <div class="eyebrow">Step 2: Update</div>
+      <div class="code-block">$ personal-work-memory</div>
+      <p>Runs daily to capture today's work and update summaries.</p>
+    </section>
+
+    <!-- Command 3 -->
+    <section class="slide">
+      <div class="eyebrow">Step 3: Query</div>
+      <div class="code-block">$ personal-history-chat</div>
+      <p>Ask questions like "What moved forward last week?"</p>
+    </section>
+
+    <!-- Example Queries -->
+    <section class="slide">
+      <div class="eyebrow">Example Queries</div>
+      <h3>What you can ask</h3>
+      <ul>
+        <li>What did I work on for Project X in Q2?</li>
+        <li>Which PRs and tickets relate to this feature?</li>
+        <li>What should I follow up on from last week?</li>
+      </ul>
+    </section>
+
+    <!-- Section: Use Cases -->
+    <section class="slide slide--section">
+      <h2>What's<br>possible</h2>
+      <span class="section-number">05</span>
+    </section>
+
+    <!-- Use Case 1 -->
+    <section class="slide">
+      <div class="eyebrow">Use Case</div>
+      <h3>Weekly status reports</h3>
+      <p>Generate evidence-backed summaries for standups and 1:1s.</p>
+    </section>
+
+    <!-- Use Case 2 -->
+    <section class="slide">
+      <div class="eyebrow">Use Case</div>
+      <h3>Project timelines</h3>
+      <p>Trace all work related to a specific project across tools and dates.</p>
+    </section>
+
+    <!-- Use Case 3 -->
+    <section class="slide">
+      <div class="eyebrow">Use Case</div>
+      <h3>Follow-up extraction</h3>
+      <p>Surface action items from Slack threads, meetings, and code reviews.</p>
+    </section>
+
+    <!-- Use Case 4 -->
+    <section class="slide">
+      <div class="eyebrow">Use Case</div>
+      <h3>Onboarding memory</h3>
+      <p>New team members backfill their first weeks to build a searchable trace.</p>
+    </section>
+
+    <!-- Closing Statement -->
+    <section class="slide slide--statement">
+      <h2>Your work,<br>connected<br>and searchable</h2>
+    </section>
+
+    <!-- Closing Slide -->
+    <section class="slide slide--section">
+      <h2>Wise Personal<br>Work Memory</h2>
+      <p class="tagline" style="color: var(--wise-forest-green); text-transform: none;">github.com/wise/wise-personal-memory-plugin</p>
+    </section>
+
+  </div>
+
+  <div class="progress"></div>
+
+  <script>
+    const deck = document.querySelector('.deck');
+    const slides = document.querySelectorAll('.slide');
+    const progress = document.querySelector('.progress');
+    let current = 0;
+
+    function goTo(index) {
+      current = Math.max(0, Math.min(index, slides.length - 1));
+      slides[current].scrollIntoView({ behavior: 'smooth' });
+      if (progress) progress.style.width = ((current + 1) / slides.length * 100) + '%';
+      slides.forEach((s, i) => s.classList.toggle('visible', i === current));
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          current = [...slides].indexOf(entry.target);
+          entry.target.classList.add('visible');
+          if (progress) progress.style.width = ((current + 1) / slides.length * 100) + '%';
+        }
+      });
+    }, { threshold: 0.5 });
+
+    slides.forEach(s => observer.observe(s));
+
+    goTo(0);
+  </script>
+</body>
+</html>
