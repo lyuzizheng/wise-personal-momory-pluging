@@ -71,7 +71,7 @@ function renderMetrics() {
 }
 
 function identityLine(user) {
-  const name = user.identity?.full_name || user.identity?.preferred_name || "Identity not captured";
+  const name = user.identity?.full_name || user.identity?.preferred_name || "Zizheng Lyu";
   const title = user.role?.title;
   const department = user.department?.category;
   const orgPath = [user.role?.team, user.role?.squad, user.role?.tribe].filter(Boolean).join(" / ");
